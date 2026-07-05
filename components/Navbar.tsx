@@ -1,22 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingBag, Menu, X, Coffee } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Menu, X, Coffee } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Container from './Container';
 import Button from './Button';
-import { useCartStore } from '@/store/cartStore';
-import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/utils';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { items, toggleCart } = useCartStore();
-    const { isAuthenticated, user } = useAuthStore();
-
-    const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
+    const pathname = usePathname();
+    const isHeroMode = pathname === '/' && !isScrolled;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -28,7 +25,7 @@ const Navbar = () => {
 
     const navLinks = [
         { href: '/', label: 'Home' },
-        { href: '/products', label: 'Shop' },
+        { href: '/products', label: 'Collection' },
         { href: '/about', label: 'About' },
         { href: '/contact', label: 'Contact' },
     ];
@@ -37,15 +34,15 @@ const Navbar = () => {
         <header
             className={cn(
                 'fixed top-0 z-50 w-full transition-all duration-300',
-                isScrolled ? 'bg-background/80 backdrop-blur-md shadow-sm' : 'bg-transparent'
+                isHeroMode ? 'bg-transparent' : 'bg-background/90 backdrop-blur-md shadow-sm'
             )}
         >
             <Container>
                 <div className="flex h-16 items-center justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2">
-                        <Coffee className="h-8 w-8 text-primary" />
-                        <span className="text-xl font-bold tracking-tight text-foreground">
+                        <Coffee className={cn('h-8 w-8', isHeroMode ? 'text-white' : 'text-primary')} />
+                        <span className={cn('text-xl font-bold tracking-tight', isHeroMode ? 'text-white' : 'text-foreground')}>
                             BeanCo
                         </span>
                     </Link>
@@ -56,7 +53,10 @@ const Navbar = () => {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                                className={cn(
+                                    'text-sm font-medium transition-colors',
+                                    isHeroMode ? 'text-white/80 hover:text-white' : 'text-muted-foreground hover:text-primary'
+                                )}
                             >
                                 {link.label}
                             </Link>
@@ -64,38 +64,11 @@ const Navbar = () => {
                     </nav>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-4">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="relative"
-                            onClick={toggleCart}
-                        >
-                            <ShoppingBag className="h-5 w-5" />
-                            {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </Button>
+                    <div className="flex items-center gap-3">
+                        <Link href="/contact" className="hidden sm:block">
+                            <Button size="sm">Partner With Us</Button>
+                        </Link>
 
-                        {isAuthenticated ? (
-                            <Link href="/profile">
-                                <Button variant="ghost" size="sm" className="relative">
-                                    <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary uppercase">
-                                        {user?.name?.charAt(0) || 'U'}
-                                    </div>
-                                </Button>
-                            </Link>
-                        ) : (
-                            <Link href="/login">
-                                <Button variant="ghost" size="sm">
-                                    Sign In
-                                </Button>
-                            </Link>
-                        )}
-
-                        {/* Mobile Menu Button */}
                         <Button
                             variant="ghost"
                             size="sm"
@@ -133,6 +106,9 @@ const Navbar = () => {
                                         {link.label}
                                     </Link>
                                 ))}
+                                <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>
+                                    <Button className="w-full">Partner With Us</Button>
+                                </Link>
                             </nav>
                         </Container>
                     </motion.div>

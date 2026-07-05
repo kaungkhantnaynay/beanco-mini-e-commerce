@@ -1,11 +1,5 @@
-'use client';
-
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
 import Container from './Container';
 import { Star } from 'lucide-react';
-import 'swiper/css';
-import 'swiper/css/pagination';
 
 const testimonials = [
     {
@@ -47,57 +41,34 @@ const Testimonials = () => {
                         What Our Customers Say
                     </h2>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        Don't just take our word for it. Here's what coffee lovers are saying about BeanCo.
+                        Don&apos;t just take our word for it. Here&apos;s what coffee lovers are saying about BeanCo.
                     </p>
                 </div>
 
-                <Swiper
-                    modules={[Pagination, Autoplay]}
-                    spaceBetween={30}
-                    slidesPerView={1}
-                    pagination={{ clickable: true }}
-                    autoplay={{
-                        delay: 5000,
-                        disableOnInteraction: false,
-                    }}
-                    breakpoints={{
-                        640: {
-                            slidesPerView: 1,
-                        },
-                        768: {
-                            slidesPerView: 2,
-                        },
-                        1024: {
-                            slidesPerView: 3,
-                        },
-                    }}
-                    className="pb-12"
-                >
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {testimonials.map((testimonial) => (
-                        <SwiperSlide key={testimonial.id} className="pb-12">
-                            <div className="h-full rounded-2xl border bg-card p-8 shadow-sm transition-shadow hover:shadow-md">
-                                <div className="flex gap-1 mb-4">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star
-                                            key={i}
-                                            className={`h-5 w-5 ${i < testimonial.rating
-                                                    ? 'fill-primary text-primary'
-                                                    : 'fill-muted text-muted-foreground'
-                                                }`}
-                                        />
-                                    ))}
-                                </div>
-                                <blockquote className="text-lg text-foreground mb-6">
-                                    "{testimonial.quote}"
-                                </blockquote>
-                                <div>
-                                    <div className="font-semibold">{testimonial.name}</div>
-                                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                                </div>
+                        <article key={testimonial.id} className="h-full rounded-lg border bg-card p-6 shadow-sm">
+                            <div className="flex gap-1 mb-4">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star
+                                        key={i}
+                                        className={`h-5 w-5 ${i < testimonial.rating
+                                                ? 'fill-primary text-primary'
+                                                : 'fill-muted text-muted-foreground'
+                                            }`}
+                                    />
+                                ))}
                             </div>
-                        </SwiperSlide>
+                            <blockquote className="text-base text-foreground mb-6">
+                                &quot;{testimonial.quote}&quot;
+                            </blockquote>
+                            <div>
+                                <div className="font-semibold">{testimonial.name}</div>
+                                <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                            </div>
+                        </article>
                     ))}
-                </Swiper>
+                </div>
             </Container>
         </section>
     );

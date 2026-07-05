@@ -18,12 +18,12 @@ const Footer = () => {
                         </p>
                     </div>
                     <div>
-                        <h4 className="font-semibold text-foreground mb-4">Shop</h4>
+                        <h4 className="font-semibold text-foreground mb-4">Collection</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="/products" className="hover:text-primary">All Coffee</Link></li>
-                            <li><Link href="/products?category=beans" className="hover:text-primary">Whole Beans</Link></li>
-                            <li><Link href="/products?category=ground" className="hover:text-primary">Ground Coffee</Link></li>
-                            <li><Link href="/products?category=accessories" className="hover:text-primary">Accessories</Link></li>
+                            <li><Link href="/products" className="hover:text-primary">Coffee Program</Link></li>
+                            <li><Link href="/products/1" className="hover:text-primary">Single Origins</Link></li>
+                            <li><Link href="/products/4" className="hover:text-primary">Espresso Blend</Link></li>
+                            <li><Link href="/products/6" className="hover:text-primary">Brew Equipment</Link></li>
                         </ul>
                     </div>
                     <div>
@@ -31,8 +31,8 @@ const Footer = () => {
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li><Link href="/about" className="hover:text-primary">About Us</Link></li>
                             <li><Link href="/contact" className="hover:text-primary">Contact</Link></li>
-                            <li><Link href="/blog" className="hover:text-primary">Blog</Link></li>
-                            <li><Link href="/careers" className="hover:text-primary">Careers</Link></li>
+                            <li><Link href="/products" className="hover:text-primary">Collection</Link></li>
+                            <li><Link href="/contact" className="hover:text-primary">Partnerships</Link></li>
                         </ul>
                     </div>
                     <div>

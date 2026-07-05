@@ -6,19 +6,19 @@ import Image from 'next/image';
 export default function AboutPage() {
     const team = [
         {
-            name: 'Jhon Doe',
+            name: 'Sarah Lee',
             role: 'Head Roaster',
             image: '/images/user-1.png',
             bio: 'Sarah brings over 15 years of roasting experience, ensuring every batch is roasted to perfection.'
         },
         {
-            name: 'Jhon Doe',
+            name: 'David Kim',
             role: 'Sourcing Manager',
             image: '/images/user-2.png',
             bio: 'David travels the world to find the most unique and sustainable coffee beans for our customers.'
         },
         {
-            name: 'Jhon Doe',
+            name: 'Elena Rivera',
             role: 'Head Barista',
             image: '/images/user-3.png',
             bio: 'Elena is an award-winning barista who trains our team and develops our signature brewing recipes.'
@@ -40,7 +40,7 @@ export default function AboutPage() {
                             <div className="prose prose-lg text-muted-foreground">
                                 <p className="mb-4">
                                     Welcome to BeanCo, where passion for coffee meets exceptional quality.
-                                    We started with a simple mission: to bring the world's finest, ethically sourced
+                                    We started with a simple mission: to bring the world&apos;s finest, ethically sourced
                                     coffee beans directly to your doorstep.
                                 </p>
                                 <p className="mb-4">
@@ -50,8 +50,8 @@ export default function AboutPage() {
                                     and excellence.
                                 </p>
                                 <p>
-                                    Whether you're an espresso aficionado or a pour-over purist, we have something
-                                    special for you. Join us in celebrating the art of coffee.
+                                    Today, we help cafes, hotels, offices, and retail partners present coffee
+                                    with the same care they bring to their own brands.
                                 </p>
                             </div>
                         </div>
@@ -114,10 +114,9 @@ export default function AboutPage() {
                         </div>
                     </div>
 
-                    {/* Meet the Team Section */}
                     <div>
                         <h2 className="text-3xl font-bold tracking-tight text-foreground mb-12 text-center">
-                            Meet the Team
+                            Roastery Leadership
                         </h2>
                         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                             {team.map((member) => (

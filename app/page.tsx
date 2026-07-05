@@ -2,7 +2,6 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import ProductCard from '@/components/ProductCard';
 import Footer from '@/components/Footer';
-import CartDrawer from '@/components/CartDrawer';
 import Container from '@/components/Container';
 import { products } from '@/lib/data';
 import Link from 'next/link';
@@ -17,24 +16,22 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background font-sans antialiased">
       <Navbar />
-      <CartDrawer />
 
       <Hero />
 
-      {/* Featured Products */}
       <section className="py-24">
         <Container>
           <div className="mb-12 flex items-end justify-between">
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                Featured Roasts
+                Signature Collection
               </h2>
               <p className="mt-4 text-muted-foreground">
-                Our most popular beans, roasted to perfection.
+                Commercial-ready coffee and equipment selected for consistent service.
               </p>
             </div>
             <Link href="/products" className="hidden sm:block">
-              <Button variant="ghost">View All Products &rarr;</Button>
+              <Button variant="ghost">View Collection &rarr;</Button>
             </Link>
           </div>
 
@@ -52,11 +49,10 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* About Section */}
       <section className="bg-secondary/30 py-24">
         <Container>
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div className="relative aspect-square overflow-hidden rounded-2xl lg:aspect-auto lg:h-[600px]">
+            <div className="relative aspect-square overflow-hidden rounded-lg lg:aspect-auto lg:h-[600px]">
               <Image
                 src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&q=80&w=1000"
                 alt="Coffee brewing"
@@ -66,20 +62,19 @@ export default function Home() {
             </div>
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                Brewing Better Coffee
+                Built for Repeatable Quality
               </h2>
               <p className="mt-6 text-lg text-muted-foreground">
-                We believe that great coffee starts with great relationships.
-                We work directly with farmers to source the finest beans, ensuring fair wages
-                and sustainable practices.
+                BeanCo presents a polished coffee program for venues that need reliable
+                flavor, clean packaging, and a supplier that understands daily service.
               </p>
               <p className="mt-4 text-lg text-muted-foreground">
-                Our master roasters carefully bring out the unique flavors of each origin,
-                creating a coffee experience that is both exceptional and ethical.
+                From origin selection to brew support, every touchpoint is designed to
+                help your brand serve better coffee without adding operational friction.
               </p>
               <div className="mt-8">
-                <Link href="/about">
-                  <Button size="lg">Learn More About Us</Button>
+                <Link href="/contact">
+                  <Button size="lg">Request a Tasting</Button>
                 </Link>
               </div>
             </div>
