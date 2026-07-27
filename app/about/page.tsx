@@ -2,6 +2,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Container from '@/components/Container';
 import Image from 'next/image';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export default function AboutPage() {
     const team = [
@@ -33,7 +34,7 @@ export default function AboutPage() {
                 <Container>
                     {/* Hero Section */}
                     <div className="grid gap-12 lg:grid-cols-2 lg:items-center mb-24">
-                        <div>
+                        <ScrollReveal>
                             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl mb-6">
                                 About BeanCo
                             </h1>
@@ -54,24 +55,26 @@ export default function AboutPage() {
                                     with the same care they bring to their own brands.
                                 </p>
                             </div>
-                        </div>
-                        <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
+                        </ScrollReveal>
+                        <ScrollReveal direction="left" delay={0.08} className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
                             <Image
                                 src="/images/espresso-blend.png"
                                 alt="About BeanCo"
                                 fill
                                 className="object-cover"
                             />
-                        </div>
+                        </ScrollReveal>
                     </div>
 
                     {/* Our History Section */}
                     <div className="mb-24">
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground mb-8 text-center">
-                            Our History
-                        </h2>
+                        <ScrollReveal>
+                            <h2 className="text-3xl font-bold tracking-tight text-foreground mb-8 text-center">
+                                Our History
+                            </h2>
+                        </ScrollReveal>
                         <div className="max-w-3xl mx-auto space-y-8">
-                            <div className="flex gap-4">
+                            <ScrollReveal delay={0.02} className="flex gap-4">
                                 <div className="flex-none w-24 font-bold text-primary text-right pt-1">2010</div>
                                 <div className="flex-1 border-l-2 border-muted pl-8 pb-8 relative">
                                     <div className="absolute -left-[9px] top-2 h-4 w-4 rounded-full bg-primary" />
@@ -80,8 +83,8 @@ export default function AboutPage() {
                                         BeanCo was founded in a small garage with a 1kg roaster and a big dream.
                                     </p>
                                 </div>
-                            </div>
-                            <div className="flex gap-4">
+                            </ScrollReveal>
+                            <ScrollReveal delay={0.04} className="flex gap-4">
                                 <div className="flex-none w-24 font-bold text-primary text-right pt-1">2015</div>
                                 <div className="flex-1 border-l-2 border-muted pl-8 pb-8 relative">
                                     <div className="absolute -left-[9px] top-2 h-4 w-4 rounded-full bg-primary" />
@@ -90,8 +93,8 @@ export default function AboutPage() {
                                         We opened our flagship cafe downtown, serving our signature blends to the community.
                                     </p>
                                 </div>
-                            </div>
-                            <div className="flex gap-4">
+                            </ScrollReveal>
+                            <ScrollReveal delay={0.06} className="flex gap-4">
                                 <div className="flex-none w-24 font-bold text-primary text-right pt-1">2020</div>
                                 <div className="flex-1 border-l-2 border-muted pl-8 pb-8 relative">
                                     <div className="absolute -left-[9px] top-2 h-4 w-4 rounded-full bg-primary" />
@@ -100,8 +103,8 @@ export default function AboutPage() {
                                         Launched our online store to share our coffee with lovers worldwide.
                                     </p>
                                 </div>
-                            </div>
-                            <div className="flex gap-4">
+                            </ScrollReveal>
+                            <ScrollReveal delay={0.08} className="flex gap-4">
                                 <div className="flex-none w-24 font-bold text-primary text-right pt-1">2023</div>
                                 <div className="flex-1 border-l-2 border-muted pl-8 relative">
                                     <div className="absolute -left-[9px] top-2 h-4 w-4 rounded-full bg-primary" />
@@ -110,33 +113,37 @@ export default function AboutPage() {
                                         Recognized for our commitment to ethical sourcing and eco-friendly practices.
                                     </p>
                                 </div>
-                            </div>
+                            </ScrollReveal>
                         </div>
                     </div>
 
                     <div>
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground mb-12 text-center">
-                            Roastery Leadership
-                        </h2>
+                        <ScrollReveal>
+                            <h2 className="text-3xl font-bold tracking-tight text-foreground mb-12 text-center">
+                                Roastery Leadership
+                            </h2>
+                        </ScrollReveal>
                         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                            {team.map((member) => (
-                                <div key={member.name} className="group relative overflow-hidden rounded-2xl bg-card border shadow-sm transition-all hover:shadow-md">
-                                    <div className="relative h-48 w-48 mx-auto mt-6 overflow-hidden rounded-full bg-muted">
-                                        <Image
-                                            src={member.image}
-                                            alt={member.name}
-                                            fill
-                                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                        />
+                            {team.map((member, index) => (
+                                <ScrollReveal key={member.name} delay={index * 0.06} className="h-full">
+                                    <div className="group relative h-full overflow-hidden rounded-2xl bg-card border shadow-sm transition-all hover:shadow-md">
+                                        <div className="relative h-48 w-48 mx-auto mt-6 overflow-hidden rounded-full bg-muted">
+                                            <Image
+                                                src={member.image}
+                                                alt={member.name}
+                                                fill
+                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                            />
+                                        </div>
+                                        <div className="p-6">
+                                            <h3 className="text-xl font-bold">{member.name}</h3>
+                                            <p className="text-sm text-primary font-medium mb-4">{member.role}</p>
+                                            <p className="text-muted-foreground text-sm">
+                                                {member.bio}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="p-6">
-                                        <h3 className="text-xl font-bold">{member.name}</h3>
-                                        <p className="text-sm text-primary font-medium mb-4">{member.role}</p>
-                                        <p className="text-muted-foreground text-sm">
-                                            {member.bio}
-                                        </p>
-                                    </div>
-                                </div>
+                                </ScrollReveal>
                             ))}
                         </div>
                     </div>

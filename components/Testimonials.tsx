@@ -1,5 +1,6 @@
 import Container from './Container';
 import { Star } from 'lucide-react';
+import ScrollReveal from './ScrollReveal';
 
 const testimonials = [
     {
@@ -36,37 +37,39 @@ const Testimonials = () => {
     return (
         <section className="py-24 bg-secondary/10">
             <Container>
-                <div className="text-center mb-16">
+                <ScrollReveal className="text-center mb-16">
                     <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                         What Our Customers Say
                     </h2>
                     <p className="mt-4 text-lg text-muted-foreground">
                         Don&apos;t just take our word for it. Here&apos;s what coffee lovers are saying about BeanCo.
                     </p>
-                </div>
+                </ScrollReveal>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                    {testimonials.map((testimonial) => (
-                        <article key={testimonial.id} className="h-full rounded-lg border bg-card p-6 shadow-sm">
-                            <div className="flex gap-1 mb-4">
-                                {[...Array(5)].map((_, i) => (
-                                    <Star
-                                        key={i}
-                                        className={`h-5 w-5 ${i < testimonial.rating
-                                                ? 'fill-primary text-primary'
-                                                : 'fill-muted text-muted-foreground'
-                                            }`}
-                                    />
-                                ))}
-                            </div>
-                            <blockquote className="text-base text-foreground mb-6">
-                                &quot;{testimonial.quote}&quot;
-                            </blockquote>
-                            <div>
-                                <div className="font-semibold">{testimonial.name}</div>
-                                <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                            </div>
-                        </article>
+                    {testimonials.map((testimonial, index) => (
+                        <ScrollReveal key={testimonial.id} delay={index * 0.06} className="h-full">
+                            <article className="h-full rounded-lg border bg-card p-6 shadow-sm">
+                                <div className="flex gap-1 mb-4">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star
+                                            key={i}
+                                            className={`h-5 w-5 ${i < testimonial.rating
+                                                    ? 'fill-primary text-primary'
+                                                    : 'fill-muted text-muted-foreground'
+                                                }`}
+                                        />
+                                    ))}
+                                </div>
+                                <blockquote className="text-base text-foreground mb-6">
+                                    &quot;{testimonial.quote}&quot;
+                                </blockquote>
+                                <div>
+                                    <div className="font-semibold">{testimonial.name}</div>
+                                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                                </div>
+                            </article>
+                        </ScrollReveal>
                     ))}
                 </div>
             </Container>

@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import Button from './Button';
 import Container from './Container';
+import ScrollReveal from './ScrollReveal';
 
 const PromotionSection = () => {
     return (
         <section className="bg-primary py-24 text-primary-foreground">
             <Container>
-                <div className="mx-auto max-w-3xl text-center">
+                <ScrollReveal className="mx-auto max-w-3xl text-center">
                     <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
                         Bring BeanCo to Your Space
                     </h2>
@@ -26,7 +27,7 @@ const PromotionSection = () => {
                     <p className="mt-4 text-sm text-primary-foreground/70">
                         Wholesale, office, retail, and hospitality inquiries welcome.
                     </p>
-                </div>
+                </ScrollReveal>
             </Container>
         </section>
     );

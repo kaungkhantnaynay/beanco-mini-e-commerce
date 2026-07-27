@@ -9,6 +9,7 @@ import Button from '@/components/Button';
 import Image from 'next/image';
 import PromotionSection from '@/components/PromotionSection';
 import Testimonials from '@/components/Testimonials';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export default function Home() {
   const featuredProducts = products.slice(0, 4);
@@ -21,7 +22,7 @@ export default function Home() {
 
       <section className="py-24">
         <Container>
-          <div className="mb-12 flex items-end justify-between">
+          <ScrollReveal className="mb-12 flex items-end justify-between">
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Signature Collection
@@ -33,11 +34,11 @@ export default function Home() {
             <Link href="/products" className="hidden sm:block">
               <Button variant="ghost">View Collection &rarr;</Button>
             </Link>
-          </div>
+          </ScrollReveal>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {featuredProducts.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} />
             ))}
           </div>
 
@@ -52,15 +53,15 @@ export default function Home() {
       <section className="bg-secondary/30 py-24">
         <Container>
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div className="relative aspect-square overflow-hidden rounded-lg lg:aspect-auto lg:h-[600px]">
+            <ScrollReveal direction="right" className="relative aspect-square overflow-hidden rounded-lg lg:aspect-auto lg:h-[600px]">
               <Image
                 src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&q=80&w=1000"
                 alt="Coffee brewing"
                 fill
                 className="object-cover"
               />
-            </div>
-            <div>
+            </ScrollReveal>
+            <ScrollReveal direction="left" delay={0.08}>
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Built for Repeatable Quality
               </h2>
@@ -77,7 +78,7 @@ export default function Home() {
                   <Button size="lg">Request a Tasting</Button>
                 </Link>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </Container>
       </section>
