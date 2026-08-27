@@ -48,6 +48,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet[Product]):
         return ProductDetailSerializer if self.action == "retrieve" else ProductListSerializer
 
     def get_queryset(self) -> QuerySet[Product]:
+        active_variant = ProductVariant.objects.filter(
+            product=OuterRef("pk"),
+            is_active=True,
+        )
         active_inventory = InventoryRecord.objects.filter(
             variant__product=OuterRef("pk"),
             variant__is_active=True,
@@ -58,9 +62,11 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet[Product]):
             Product.objects.filter(is_active=True, category__is_active=True)
             .select_related("category")
             .annotate(
+                has_active_variant=Exists(active_variant),
                 starting_price=Min("variants__price", filter=Q(variants__is_active=True)),
                 available=Exists(active_inventory),
             )
+            .filter(has_active_variant=True)
             .prefetch_related(
                 Prefetch("variants", queryset=active_variants),
                 Prefetch(

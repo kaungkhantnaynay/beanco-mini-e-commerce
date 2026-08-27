@@ -62,6 +62,10 @@ minimum price, maximum price, and ordering by name or price.
 - Inquiry and subscription inputs are validated, throttled, stored, and tested.
 - Money is serialized consistently and documented in OpenAPI.
 
+Completion reverified on 2026-08-27 with regression coverage for active-variant
+catalog visibility, decimal-string price contracts, immutable inventory transaction
+querysets, and newsletter validation, throttling, and notification failures.
+
 ## Out of scope
 
 - Customer cart and checkout

@@ -19,12 +19,23 @@ def test_anonymous_catalog_lists_only_active_records(client: Client) -> None:
     InventoryRecordFactory(variant__product=active_product, available_quantity=5)
     ProductFactory(name="Hidden Product", is_active=False)
     ProductFactory(name="Hidden Category Product", category=CategoryFactory(is_active=False))
+    ProductFactory(name="No Active Variant", slug="no-active-variant")
+    InventoryRecordFactory(variant__product__slug="inactive-variant", variant__is_active=False)
 
     response = client.get(reverse("product-list"))
 
     assert response.status_code == 200
     assert [item["slug"] for item in response.json()["results"]] == ["available-coffee"]
     assert response.json()["results"][0]["starting_price"] == "850.00"
+
+
+@pytest.mark.django_db
+def test_product_without_active_variant_is_not_public(client: Client) -> None:
+    product = ProductFactory(slug="no-active-variant")
+
+    response = client.get(reverse("product-detail", args=[product.slug]))
+
+    assert response.status_code == 404
 
 
 @pytest.mark.django_db

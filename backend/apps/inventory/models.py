@@ -8,6 +8,14 @@ from django.db.models import F, Q
 from apps.catalog.models import ProductVariant
 
 
+class ImmutableInventoryTransactionQuerySet(models.QuerySet["InventoryTransaction"]):
+    def update(self, **kwargs: Any) -> int:
+        raise ValidationError("Inventory transactions are immutable.")
+
+    def delete(self) -> tuple[int, dict[str, int]]:
+        raise ValidationError("Inventory transactions are immutable.")
+
+
 class InventoryRecord(models.Model):
     class StockPolicy(models.TextChoices):
         TRACKED = "tracked", "Tracked"
@@ -40,6 +48,8 @@ class InventoryRecord(models.Model):
 
 
 class InventoryTransaction(models.Model):
+    objects = ImmutableInventoryTransactionQuerySet.as_manager()
+
     class Reason(models.TextChoices):
         INITIAL = "initial", "Initial stock"
         RECEIPT = "receipt", "Stock receipt"

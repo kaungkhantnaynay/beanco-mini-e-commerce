@@ -23,6 +23,15 @@ def inquiry_payload() -> dict[str, object]:
     }
 
 
+def newsletter_payload() -> dict[str, object]:
+    return {
+        "email": " News@Example.TEST ",
+        "consent": True,
+        "consent_source": "storefront_footer",
+        "website": "",
+    }
+
+
 @pytest.mark.django_db
 def test_inquiry_is_validated_stored_and_notified(
     client: Client, django_capture_on_commit_callbacks: Any
@@ -70,12 +79,7 @@ def test_notification_failure_does_not_rollback_inquiry(
 def test_newsletter_subscription_is_idempotent_and_privacy_safe(
     client: Client, django_capture_on_commit_callbacks: Any
 ) -> None:
-    payload = {
-        "email": " News@Example.TEST ",
-        "consent": True,
-        "consent_source": "storefront_footer",
-        "website": "",
-    }
+    payload = newsletter_payload()
 
     with django_capture_on_commit_callbacks(execute=True):
         first = client.post(
@@ -93,6 +97,37 @@ def test_newsletter_subscription_is_idempotent_and_privacy_safe(
 
 
 @pytest.mark.django_db
+def test_newsletter_rejects_missing_consent_and_honeypot(client: Client) -> None:
+    payload = newsletter_payload()
+    payload.update({"consent": False, "website": "spam.example"})
+
+    response = client.post(
+        reverse("newsletter-subscription-create"), payload, content_type="application/json"
+    )
+
+    assert response.status_code == 400
+    assert response.json()["code"] == "validation_error"
+    assert set(response.json()["fields"]) == {"consent", "website"}
+    assert not NewsletterSubscription.objects.exists()
+
+
+@pytest.mark.django_db
+def test_newsletter_notification_failure_does_not_rollback_subscription(
+    client: Client, django_capture_on_commit_callbacks: Any
+) -> None:
+    with patch("apps.communications.notifications.send_mail", side_effect=RuntimeError("offline")):
+        with django_capture_on_commit_callbacks(execute=True):
+            response = client.post(
+                reverse("newsletter-subscription-create"),
+                newsletter_payload(),
+                content_type="application/json",
+            )
+
+    assert response.status_code == 202
+    assert NewsletterSubscription.objects.count() == 1
+
+
+@pytest.mark.django_db
 def test_inquiry_is_throttled(client: Client) -> None:
     cache.clear()
     with patch.dict(
@@ -106,6 +141,30 @@ def test_inquiry_is_throttled(client: Client) -> None:
         )
 
     assert first.status_code == 201
+    assert second.status_code == 429
+    assert second.json()["code"] == "throttled"
+    cache.clear()
+
+
+@pytest.mark.django_db
+def test_newsletter_subscription_is_throttled(client: Client) -> None:
+    cache.clear()
+    with patch.dict(
+        "rest_framework.throttling.ScopedRateThrottle.THROTTLE_RATES",
+        {"newsletter": "1/hour"},
+    ):
+        first = client.post(
+            reverse("newsletter-subscription-create"),
+            newsletter_payload(),
+            content_type="application/json",
+        )
+        second = client.post(
+            reverse("newsletter-subscription-create"),
+            newsletter_payload(),
+            content_type="application/json",
+        )
+
+    assert first.status_code == 202
     assert second.status_code == 429
     assert second.json()["code"] == "throttled"
     cache.clear()

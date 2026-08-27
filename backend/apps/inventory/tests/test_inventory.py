@@ -50,3 +50,17 @@ def test_inventory_transactions_cannot_be_changed_or_deleted() -> None:
         inventory_transaction.save()
     with pytest.raises(ValidationError):
         inventory_transaction.delete()
+
+
+@pytest.mark.django_db
+def test_inventory_transactions_cannot_be_bulk_changed_or_deleted() -> None:
+    inventory_transaction = cast(InventoryTransaction, InventoryTransactionFactory())
+    queryset = InventoryTransaction.objects.filter(pk=inventory_transaction.pk)
+
+    with pytest.raises(ValidationError):
+        queryset.update(reference="Changed")
+    with pytest.raises(ValidationError):
+        queryset.delete()
+
+    inventory_transaction.refresh_from_db()
+    assert inventory_transaction.reference == ""

@@ -22,3 +22,6 @@ def test_openapi_schema_is_available(client: Client) -> None:
     assert (
         schema["components"]["schemas"]["ProductVariant"]["properties"]["price"]["type"] == "string"
     )
+    starting_price = schema["components"]["schemas"]["ProductList"]["properties"]["starting_price"]
+    assert starting_price["type"] == "string"
+    assert starting_price.get("nullable") is not True
