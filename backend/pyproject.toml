@@ -1,0 +1,60 @@
+[project]
+name = "beanco-backend"
+version = "0.1.0"
+description = "Django REST API for BeanCo"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "Django==5.2.17",
+    "django-cors-headers==4.9.0",
+    "django-environ==0.14.0",
+    "django-storages[s3]==1.14.6",
+    "djangorestframework==3.18.0",
+    "drf-spectacular==0.30.0",
+    "Pillow==11.3.0",
+    "psycopg[binary]==3.3.4",
+    "whitenoise[brotli]==6.12.0",
+]
+
+[dependency-groups]
+dev = [
+    "factory-boy==3.3.3",
+    "mypy==1.20.2",
+    "django-stubs==5.2.9",
+    "pytest==8.4.2",
+    "pytest-django==4.14.0",
+    "ruff==0.16.4",
+    "djangorestframework-stubs==3.16.9",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+python_files = ["test_*.py", "*_tests.py"]
+testpaths = ["apps", "config"]
+addopts = "--strict-markers"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+python_version = "3.12"
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = ["environ", "factory.*"]
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings.test"

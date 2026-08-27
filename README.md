@@ -1,41 +1,60 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BeanCo Mini E-Commerce
 
-## Getting Started
+BeanCo is a Next.js coffee catalog and partnership storefront. A Django REST
+Framework backend will provide catalog management, lead capture, inventory, carts,
+orders, customer accounts, and payments through phased implementation.
 
-First, run the development server:
+## Current state
+
+- Next.js 16, React 19, TypeScript, and Tailwind CSS frontend
+- Static storefront pages ready for Phase 3 API integration
+- Django REST Framework backend foundation in `backend/`
+- Phase 2 catalog, inventory, communications, Admin, and public APIs complete
+
+## Required reading before implementation
+
+All contributors and implementation agents must read:
+
+1. [`AGENTS.md`](AGENTS.md)
+2. [`RULES.md`](RULES.md)
+3. [`docs/plans/README.md`](docs/plans/README.md)
+4. The plan document for the phase being implemented
+
+## Frontend setup
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Verification commands:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```
 
-## Learn More
+## Backend setup
 
-To learn more about Next.js, take a look at the following resources:
+Install Python 3.12+ and [uv](https://docs.astral.sh/uv/), then:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cd backend
+cp .env.example .env
+uv sync --group dev
+uv run python manage.py migrate
+uv run python manage.py createsuperuser
+uv run python manage.py runserver
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The backend runs at [http://localhost:8000](http://localhost:8000). Its health,
+schema, documentation, and verification commands are documented in
+[backend/README.md](backend/README.md).
 
-## Deploy on Vercel
+## Plans
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-# mini-e-commerce
-Coffee Beans Website
->>>>>>> a5bd3a1a821ca8b0cb76cfece69771b123acfba5
+The complete roadmap and phase status are maintained in
+[`docs/plans/README.md`](docs/plans/README.md).
