@@ -3,16 +3,25 @@ import Hero from '@/components/Hero';
 import ProductCard from '@/components/ProductCard';
 import Footer from '@/components/Footer';
 import Container from '@/components/Container';
-import { products } from '@/lib/data';
-import Link from 'next/link';
-import Button from '@/components/Button';
+import ButtonLink from '@/components/ButtonLink';
 import Image from 'next/image';
 import PromotionSection from '@/components/PromotionSection';
 import Testimonials from '@/components/Testimonials';
 import ScrollReveal from '@/components/ScrollReveal';
+import { getProducts } from '@/lib/api/catalog';
+import { CatalogState } from '@/components/CatalogState';
+import type { ProductSummary } from '@/lib/types/api';
 
-export default function Home() {
-  const featuredProducts = products.slice(0, 4);
+export default async function Home() {
+  let featuredProducts: ProductSummary[] = [];
+  let catalogError = '';
+
+  try {
+    const catalog = await getProducts({ featured: true, page_size: 4 });
+    featuredProducts = catalog.results;
+  } catch (error) {
+    catalogError = error instanceof Error ? error.message : 'The catalog is temporarily unavailable.';
+  }
 
   return (
     <main className="min-h-screen bg-background font-sans antialiased">
@@ -31,21 +40,32 @@ export default function Home() {
                 Commercial-ready coffee and equipment selected for consistent service.
               </p>
             </div>
-            <Link href="/products" className="hidden sm:block">
-              <Button variant="ghost">View Collection &rarr;</Button>
-            </Link>
+            <ButtonLink href="/products" variant="ghost" className="hidden sm:inline-flex">
+              View Collection &rarr;
+            </ButtonLink>
           </ScrollReveal>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {featuredProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
-          </div>
+          {catalogError ? (
+            <CatalogState
+              title="The signature collection is temporarily unavailable"
+              detail={catalogError}
+              retryHref="/"
+            />
+          ) : featuredProducts.length ? (
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredProducts.map((product, index) => (
+                <ProductCard key={product.slug} product={product} index={index} />
+              ))}
+            </div>
+          ) : (
+            <CatalogState
+              title="New coffees are on the way"
+              detail="There are no featured products right now. Browse the full collection or check back soon."
+            />
+          )}
 
           <div className="mt-12 flex justify-center sm:hidden">
-            <Link href="/products">
-              <Button variant="outline">View All Products</Button>
-            </Link>
+            <ButtonLink href="/products" variant="outline">View All Products</ButtonLink>
           </div>
         </Container>
       </section>
@@ -58,6 +78,7 @@ export default function Home() {
                 src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&q=80&w=1000"
                 alt="Coffee brewing"
                 fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover"
               />
             </ScrollReveal>
@@ -74,9 +95,7 @@ export default function Home() {
                 help your brand serve better coffee without adding operational friction.
               </p>
               <div className="mt-8">
-                <Link href="/contact">
-                  <Button size="lg">Request a Tasting</Button>
-                </Link>
+                <ButtonLink href="/contact" size="lg">Request a Tasting</ButtonLink>
               </div>
             </ScrollReveal>
           </div>

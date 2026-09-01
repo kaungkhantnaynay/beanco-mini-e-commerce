@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Coffee, Facebook, Instagram, Twitter } from 'lucide-react';
 import Container from './Container';
+import NewsletterForm from './NewsletterForm';
 
 const Footer = () => {
     return (
@@ -21,9 +22,9 @@ const Footer = () => {
                         <h4 className="font-semibold text-foreground mb-4">Collection</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li><Link href="/products" className="hover:text-primary">Coffee Program</Link></li>
-                            <li><Link href="/products/1" className="hover:text-primary">Single Origins</Link></li>
-                            <li><Link href="/products/4" className="hover:text-primary">Espresso Blend</Link></li>
-                            <li><Link href="/products/6" className="hover:text-primary">Brew Equipment</Link></li>
+                            <li><Link href="/products?type=coffee" className="hover:text-primary">Coffee</Link></li>
+                            <li><Link href="/products?availability=true" className="hover:text-primary">Available Now</Link></li>
+                            <li><Link href="/products?type=equipment" className="hover:text-primary">Brew Equipment</Link></li>
                         </ul>
                     </div>
                     <div>
@@ -38,22 +39,13 @@ const Footer = () => {
                     <div>
                         <h4 className="font-semibold text-foreground mb-4">Connect</h4>
                         <div className="flex gap-4 text-muted-foreground">
-                            <a href="#" className="hover:text-primary"><Instagram className="h-5 w-5" /></a>
-                            <a href="#" className="hover:text-primary"><Facebook className="h-5 w-5" /></a>
-                            <a href="#" className="hover:text-primary"><Twitter className="h-5 w-5" /></a>
+                            <a href="#" aria-label="BeanCo on Instagram" className="hover:text-primary"><Instagram className="h-5 w-5" aria-hidden="true" /></a>
+                            <a href="#" aria-label="BeanCo on Facebook" className="hover:text-primary"><Facebook className="h-5 w-5" aria-hidden="true" /></a>
+                            <a href="#" aria-label="BeanCo on X" className="hover:text-primary"><Twitter className="h-5 w-5" aria-hidden="true" /></a>
                         </div>
                         <div className="mt-4">
                             <h5 className="text-sm font-medium mb-2">Newsletter</h5>
-                            <div className="flex gap-2">
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                />
-                                <button className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-                                    Subscribe
-                                </button>
-                            </div>
+                            <NewsletterForm />
                         </div>
                     </div>
                 </div>

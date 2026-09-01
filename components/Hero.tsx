@@ -1,7 +1,6 @@
 'use client';
 
-import Button from './Button';
-import Link from 'next/link';
+import ButtonLink from './ButtonLink';
 import Container from './Container';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 
@@ -60,16 +59,12 @@ const Hero = () => {
                         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
                     >
-                        <Link href="/products">
-                            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white border-none">
-                                Explore Collection
-                            </Button>
-                        </Link>
-                        <Link href="/contact">
-                            <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-black">
-                                Request Partnership
-                            </Button>
-                        </Link>
+                        <ButtonLink href="/products" size="lg" className="border-none bg-primary text-white hover:bg-primary/90">
+                            Explore Collection
+                        </ButtonLink>
+                        <ButtonLink href="/contact" size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white hover:text-black">
+                            Request Partnership
+                        </ButtonLink>
                     </motion.div>
                     <motion.div
                         className="mt-12 grid max-w-2xl grid-cols-3 gap-4 border-t border-white/25 pt-6 text-sm text-white/80"

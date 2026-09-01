@@ -39,8 +39,9 @@ Transactional commerce follows after the catalog and API foundation are stable.
 
 ## Current status
 
-- Current phase: Phase 3
-- Backend: Django/DRF catalog, inventory, and communications APIs complete
+- Current phase: Phase 4 in progress; guest cart and checkout preview complete
+- Backend: Django/DRF catalog, inventory, communications, guest cart, and checkout preview complete
 - Database: PostgreSQL configured; initial migration verified against an empty PostgreSQL database
-- API: health, catalog reads, inquiry/newsletter writes, OpenAPI schema, and docs implemented
-- Frontend dependency installation/build: verified in Phase 0
+- API: health, catalog reads, inquiry/newsletter writes, cart mutations, checkout preview, OpenAPI schema, and docs implemented
+- Frontend: live typed catalog, slug details, inquiry/newsletter submissions, and five-minute catalog revalidation complete
+- Next gate: implement durable idempotent orders and concurrency-safe stock deduction

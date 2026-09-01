@@ -61,6 +61,7 @@ export default function AboutPage() {
                                 src="/images/espresso-blend.png"
                                 alt="About BeanCo"
                                 fill
+                                sizes="(min-width: 1024px) 50vw, 100vw"
                                 className="object-cover"
                             />
                         </ScrollReveal>
@@ -132,6 +133,7 @@ export default function AboutPage() {
                                                 src={member.image}
                                                 alt={member.name}
                                                 fill
+                                                sizes="192px"
                                                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                                             />
                                         </div>

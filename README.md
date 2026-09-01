@@ -6,10 +6,10 @@ orders, customer accounts, and payments through phased implementation.
 
 ## Current state
 
-- Next.js 16, React 19, TypeScript, and Tailwind CSS frontend
-- Static storefront pages ready for Phase 3 API integration
+- Next.js 16.3, React 19, TypeScript, and Tailwind CSS frontend
+- Live Django-backed catalog, slug product pages, partnership inquiry, and newsletter forms
 - Django REST Framework backend foundation in `backend/`
-- Phase 2 catalog, inventory, communications, Admin, and public APIs complete
+- Phases 0–3 complete; Phase 4 guest cart backend complete and order work in progress
 
 ## Required reading before implementation
 
@@ -24,16 +24,24 @@ All contributors and implementation agents must read:
 
 ```bash
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+`API_BASE_URL` is used for server-rendered catalog requests and may use private
+networking in hosted environments. `NEXT_PUBLIC_API_BASE_URL` is browser-visible and
+used for inquiry/newsletter submissions. `NEXT_PUBLIC_MEDIA_BASE_URL` is the approved
+public media origin for `next/image`. Catalog reads revalidate every five minutes;
+form submissions are never cached.
 
 Verification commands:
 
 ```bash
 npm run lint
 npx tsc --noEmit
+npm test
 npm run build
 ```
 

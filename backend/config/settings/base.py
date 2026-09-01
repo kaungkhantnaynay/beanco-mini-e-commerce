@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "apps.catalog",
     "apps.inventory",
     "apps.communications",
+    "apps.carts",
 ]
 
 MIDDLEWARE = [
@@ -99,6 +100,8 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "inquiries": env("INQUIRY_THROTTLE_RATE", default="5/hour"),
         "newsletter": env("NEWSLETTER_THROTTLE_RATE", default="10/hour"),
+        "carts": env("CART_THROTTLE_RATE", default="60/hour"),
+        "checkout": env("CHECKOUT_THROTTLE_RATE", default="20/hour"),
     },
 }
 
@@ -112,6 +115,10 @@ SPECTACULAR_SETTINGS = {
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["http://localhost:3000"])
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:3000"])
 CORS_ALLOW_CREDENTIALS = True
+
+CART_COOKIE_NAME = env("CART_COOKIE_NAME", default="beanco_cart")
+CART_COOKIE_MAX_AGE = 30 * 24 * 60 * 60
+CART_COOKIE_SECURE = env.bool("CART_COOKIE_SECURE", default=not DEBUG)
 
 EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="BeanCo <noreply@beanco.example>")

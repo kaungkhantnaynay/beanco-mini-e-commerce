@@ -7,20 +7,25 @@ current visual experience, accessibility, and server-rendering benefits.
 
 ## Work items
 
-- [ ] Add documented public/server API base URL configuration.
-- [ ] Create a centralized typed API client with timeout and error normalization.
-- [ ] Add TypeScript types matching the published catalog contract.
-- [ ] Fetch featured products for the home page from Django.
-- [ ] Fetch product collections with pagination and filters.
-- [ ] Change product detail routing from numeric IDs to product slugs.
-- [ ] Define Next.js caching/revalidation behavior for catalog requests.
-- [ ] Configure backend media/image origins in Next.js.
-- [ ] Replace the `mailto:` contact form with an accessible API submission flow.
-- [ ] Connect newsletter subscription to the API.
-- [ ] Add loading, empty, success, field-error, server-error, and offline states.
-- [ ] Remove `lib/data.ts` only after all consumers use the API.
-- [ ] Add frontend tests for API mapping and critical form interactions.
-- [ ] Verify responsive behavior and keyboard/screen-reader usage.
+- [x] Add documented public/server API base URL configuration.
+- [x] Create a centralized typed API client with timeout and error normalization.
+- [x] Add TypeScript types matching the published catalog contract.
+- [x] Fetch featured products for the home page from Django.
+- [x] Fetch product collections with pagination and filters.
+- [x] Change product detail routing from numeric IDs to product slugs.
+- [x] Define Next.js caching/revalidation behavior for catalog requests.
+- [x] Configure backend media/image origins in Next.js.
+- [x] Replace the `mailto:` contact form with an accessible API submission flow.
+- [x] Connect newsletter subscription to the API.
+- [x] Add loading, empty, success, field-error, server-error, and offline states.
+- [x] Remove `lib/data.ts` only after all consumers use the API.
+- [x] Add frontend tests for API mapping and critical form interactions.
+- [x] Verify responsive behavior and keyboard/screen-reader usage.
+
+Completion verified on 2026-08-27. Catalog reads revalidate every five minutes;
+inquiry and newsletter writes are never cached. Responsive browser verification
+covered the live home/catalog/detail/contact routes, filtering, 404 behavior,
+semantic controls, mobile navigation, and horizontal overflow at 390 px.
 
 ## Acceptance criteria
 
@@ -37,4 +42,3 @@ current visual experience, accessibility, and server-rendering benefits.
 - Cart UI
 - Checkout
 - Customer login
-

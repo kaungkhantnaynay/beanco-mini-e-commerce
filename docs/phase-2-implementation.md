@@ -47,6 +47,5 @@ Production must provide the documented R2 and Resend SMTP environment variables.
 
 ## Next step
 
-Phase 3 can replace the frontend's hard-coded catalog and form behavior with these
-published API contracts. `lib/data.ts` remains intentionally in place until all
-frontend consumers have migrated.
+Phase 3 replaced the frontend's hard-coded catalog and form behavior with these
+published API contracts. `lib/data.ts` was removed after all consumers migrated.

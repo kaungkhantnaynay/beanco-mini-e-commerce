@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import Button from './Button';
+import ButtonLink from './ButtonLink';
 import Container from './Container';
 import ScrollReveal from './ScrollReveal';
 
@@ -15,15 +14,9 @@ const PromotionSection = () => {
                         Build a coffee program with polished packaging, dependable roast profiles,
                         and tasting support for your team.
                     </p>
-                    <Link href="/contact">
-                        <Button
-                            size="lg"
-                            variant="secondary"
-                            className="font-semibold"
-                        >
-                            Start a Conversation
-                        </Button>
-                    </Link>
+                    <ButtonLink href="/contact" size="lg" variant="secondary" className="font-semibold">
+                        Start a Conversation
+                    </ButtonLink>
                     <p className="mt-4 text-sm text-primary-foreground/70">
                         Wholesale, office, retail, and hospitality inquiries welcome.
                     </p>
