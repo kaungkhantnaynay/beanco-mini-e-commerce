@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Coffee } from 'lucide-react';
+import { Menu, X, Coffee, ShoppingBag } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import Container from './Container';
@@ -68,6 +68,17 @@ const Navbar = () => {
 
                     {/* Actions */}
                     <div className="flex items-center gap-3">
+                        <ButtonLink
+                            href="/cart"
+                            variant="ghost"
+                            size="sm"
+                            aria-label="View cart"
+                            aria-current={pathname === '/cart' ? 'page' : undefined}
+                            className={cn(isHeroMode ? 'text-white hover:bg-white/10 hover:text-white' : '')}
+                        >
+                            <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+                            <span className="ml-2 hidden lg:inline">Cart</span>
+                        </ButtonLink>
                         <ButtonLink href="/contact" size="sm" className="hidden sm:inline-flex">
                             Partner With Us
                         </ButtonLink>

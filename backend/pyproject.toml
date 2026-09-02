@@ -13,6 +13,7 @@ dependencies = [
     "drf-spectacular==0.30.0",
     "Pillow==11.3.0",
     "psycopg[binary]==3.3.4",
+    "stripe>=13,<14",
     "whitenoise[brotli]==6.12.0",
 ]
 

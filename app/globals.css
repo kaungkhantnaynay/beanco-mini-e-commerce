@@ -29,6 +29,23 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+.commerce-status {
+  animation: commerce-status-in 180ms ease-out;
+}
+
+@keyframes commerce-status-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .commerce-status {
+    animation: none;
+  }
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(0.98 0.01 85);

@@ -6,6 +6,7 @@ import { CatalogState } from "@/components/CatalogState";
 import Container from "@/components/Container";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import ProductPurchase from "@/components/ProductPurchase";
 import { getProduct } from "@/lib/api/catalog";
 import { ApiRequestError } from "@/lib/api/client";
 import { formatTHB } from "@/lib/format";
@@ -79,14 +80,18 @@ export default async function ProductDetailPage({
                   : "Currently unavailable — ask about future availability"}
               </p>
 
-              <div className="mt-8 flex gap-4">
+              <div className="mt-8">
+                <ProductPurchase productName={product.name} variants={product.variants} />
+              </div>
+
+              <div className="mt-5 flex gap-4">
                 <ButtonLink href="/contact" size="lg">
                   <MessageSquare className="mr-2 h-5 w-5" aria-hidden="true" />
                   Request Details
                 </ButtonLink>
               </div>
 
-              <div className="mt-12 border-t pt-8">
+              <div className="mt-10 border-t pt-8">
                 <h2 className="mb-4 font-semibold text-foreground">Available options</h2>
                 <ul className="space-y-3 text-sm text-muted-foreground">
                   {product.variants.map((variant) => (

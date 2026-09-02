@@ -24,6 +24,16 @@ def test_openapi_schema_is_available(client: Client) -> None:
         "/api/v1/checkout/preview/",
         "/api/v1/orders/",
         "/api/v1/orders/{public_id}/status/",
+        "/api/v1/auth/csrf/",
+        "/api/v1/auth/register/",
+        "/api/v1/auth/verify-email/",
+        "/api/v1/auth/login/",
+        "/api/v1/auth/logout/",
+        "/api/v1/auth/password-reset/",
+        "/api/v1/auth/password-reset/confirm/",
+        "/api/v1/account/",
+        "/api/v1/orders/{public_id}/payment-session/",
+        "/api/v1/payments/stripe/webhook/",
     }.issubset(schema["paths"])
     assert (
         schema["components"]["schemas"]["ProductVariant"]["properties"]["price"]["type"] == "string"

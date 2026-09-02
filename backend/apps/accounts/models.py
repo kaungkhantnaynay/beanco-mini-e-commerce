@@ -39,6 +39,7 @@ class UserManager(BaseUserManager["User"]):
 class User(AbstractUser):
     username = None  # type: ignore[assignment]
     email = models.EmailField("email address", unique=True)
+    email_verified_at = models.DateTimeField(blank=True, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

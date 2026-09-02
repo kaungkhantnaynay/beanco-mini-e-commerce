@@ -1,7 +1,7 @@
 # BeanCo backend
 
 The Django REST Framework backend serves the BeanCo catalog, inventory, guest cart,
-order, partnership inquiry, and newsletter domains through versioned JSON under
+order, account authentication, partnership inquiry, and newsletter domains through versioned JSON under
 `/api/v1/`.
 
 ## Setup
@@ -45,6 +45,16 @@ Endpoints:
 - `POST /api/v1/checkout/preview/`
 - `POST /api/v1/orders/`
 - `GET /api/v1/orders/{public_id}/status/`
+- `GET /api/v1/auth/csrf/`
+- `POST /api/v1/auth/register/`
+- `POST /api/v1/auth/verify-email/`
+- `POST /api/v1/auth/login/`
+- `POST /api/v1/auth/logout/`
+- `POST /api/v1/auth/password-reset/`
+- `POST /api/v1/auth/password-reset/confirm/`
+- `GET /api/v1/account/`
+- `POST /api/v1/orders/{public_id}/payment-session/`
+- `POST /api/v1/payments/stripe/webhook/`
 - `/admin/`
 
 `seed_catalog` idempotently imports the eight original products and their available
@@ -63,6 +73,18 @@ catalog, stock, prices, and totals on every request.
 Order creation requires an `Idempotency-Key` header containing 16–128 safe
 characters. It snapshots the validated cart and shipping address, atomically deducts
 stock, and returns the existing order when the same request key is retried.
+
+Browser authentication uses Django's HTTP-only session cookie. Fetch
+`GET /api/v1/auth/csrf/` first, then send the CSRF cookie value as `X-CSRFToken` with
+credentials on every authentication mutation. Verification and reset messages use
+`ACCOUNT_EMAIL_BACKEND`; keep this separate from a console backend so signed tokens
+never enter logs. Production also requires public `ACCOUNT_EMAIL_VERIFICATION_URL`
+and `ACCOUNT_PASSWORD_RESET_URL` values.
+
+Stripe-hosted Checkout uses THB cards and PromptPay. Payment-session creation requires
+the order's guest-cart cookie or authenticated owner plus an `Idempotency-Key` header.
+Set `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_SUCCESS_URL`, and
+`STRIPE_CANCEL_URL`; use the Stripe CLI to forward signed sandbox events locally.
 
 Concurrency verification requires PostgreSQL. With a disposable test database set
 in `DATABASE_URL`, run:

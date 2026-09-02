@@ -7,9 +7,10 @@ orders, customer accounts, and payments through phased implementation.
 ## Current state
 
 - Next.js 16.3, React 19, TypeScript, and Tailwind CSS frontend
-- Live Django-backed catalog, slug product pages, partnership inquiry, and newsletter forms
+- Live Django-backed catalog, product purchase controls, anonymous cart, checkout,
+  order confirmation, partnership inquiry, and newsletter forms
 - Django REST Framework backend foundation in `backend/`
-- Phases 0–3 complete; Phase 4 transactional backend complete and cart/checkout UI in progress
+- Phases 0–4 complete; Phase 5 account authentication and Stripe Checkout foundations in progress
 
 ## Required reading before implementation
 
@@ -32,7 +33,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 `API_BASE_URL` is used for server-rendered catalog requests and may use private
 networking in hosted environments. `NEXT_PUBLIC_API_BASE_URL` is browser-visible and
-used for inquiry/newsletter submissions. `NEXT_PUBLIC_MEDIA_BASE_URL` is the approved
+used for commerce and inquiry/newsletter submissions. `NEXT_PUBLIC_MEDIA_BASE_URL` is the approved
 public media origin for `next/image`. Catalog reads revalidate every five minutes;
 form submissions are never cached.
 

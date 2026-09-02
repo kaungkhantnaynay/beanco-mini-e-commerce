@@ -24,7 +24,7 @@ correct price and inventory behavior. Payment is not captured in this phase.
 - [x] Implement idempotent order creation inside a database transaction.
 - [x] Snapshot all commercial order-line fields.
 - [x] Protect stock changes against concurrent checkout.
-- [ ] Add cart and checkout pages/components to Next.js.
+- [x] Add cart and checkout pages/components to Next.js.
 - [x] Add staff order views and controlled status actions in Django Admin.
 - [x] Test tampered prices, unavailable variants, insufficient stock, duplicate
       checkout requests, concurrency, permissions, and rollback behavior.
@@ -58,6 +58,7 @@ GET    /api/v1/orders/{public_id}/status/
 
 ## Progress note
 
-The Phase 4 backend was completed on 2026-09-01, including PostgreSQL concurrency
-verification. The approved commercial rules are recorded in ADR 0003. The Next.js
-cart and checkout UI remains open and must be implemented before Phase 4 is complete.
+Phase 4 was completed on 2026-09-02. The backend includes PostgreSQL concurrency
+verification, and the Next.js product purchase, anonymous cart, checkout preview,
+idempotent order submission, and public order-status experiences were verified
+against the live local API. The approved commercial rules are recorded in ADR 0003.

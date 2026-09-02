@@ -25,6 +25,7 @@ const Footer = () => {
                             <li><Link href="/products?type=coffee" className="hover:text-primary">Coffee</Link></li>
                             <li><Link href="/products?availability=true" className="hover:text-primary">Available Now</Link></li>
                             <li><Link href="/products?type=equipment" className="hover:text-primary">Brew Equipment</Link></li>
+                            <li><Link href="/cart" className="hover:text-primary">Cart</Link></li>
                         </ul>
                     </div>
                     <div>

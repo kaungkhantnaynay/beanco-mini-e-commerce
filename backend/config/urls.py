@@ -15,7 +15,9 @@ urlpatterns = [
         name="openapi-docs",
     ),
     path("api/v1/", include("apps.catalog.urls")),
+    path("api/v1/", include("apps.accounts.urls")),
     path("api/v1/", include("apps.communications.urls")),
     path("api/v1/", include("apps.carts.urls")),
     path("api/v1/", include("apps.orders.urls")),
+    path("api/v1/", include("apps.payments.urls")),
 ]

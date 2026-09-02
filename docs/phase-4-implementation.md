@@ -1,7 +1,7 @@
 # Phase 4 implementation record
 
-Date: 2026-09-01
-Status: in progress — transactional backend complete; frontend cart/checkout remains.
+Date: 2026-09-02
+Status: complete
 
 ## Completed in this slice
 
@@ -37,19 +37,41 @@ Status: in progress — transactional backend complete; frontend cart/checkout r
   address, and item views with controlled fulfillment/cancellation actions.
 - Added one-time cancellation stock restoration with a dedicated immutable inventory
   transaction reason.
+- Added typed, cookie-aware browser clients for cart mutations, checkout preview,
+  idempotent order creation, and privacy-limited order status lookup.
+- Added available-variant purchase controls to product detail pages with quantity,
+  stock, duplicate-submit, success, and actionable failure states.
+- Added responsive cart, checkout, and order confirmation routes with server-returned
+  totals, accessible labels and live regions, nested address errors, retry-safe order
+  submission, and explicit awaiting-payment messaging.
+- Added cart entry points to desktop/mobile navigation and the footer.
+- Allowed the required `Idempotency-Key` request header through credentialed CORS;
+  live browser testing caught and verified this frontend/backend boundary.
+- Applied restrained 180 ms status-entry feedback with reduced-motion support.
 
 ## Verification
 
 - `uv run ruff check .` — passed
-- `uv run ruff format --check .` — passed: 90 files formatted
-- `uv run mypy apps config` — passed: 103 source files
-- `uv run pytest` — passed: 79 tests; 1 PostgreSQL-only concurrency test skipped
-- PostgreSQL 16 full suite — passed: 80 tests, including concurrent oversell protection
+- `uv run ruff format --check .` — passed: 91 files formatted
+- `uv run mypy apps config` — passed: 104 source files
+- `uv run pytest` — passed: 80 tests; 1 PostgreSQL-only concurrency test skipped
+- PostgreSQL 16 backend suite before the frontend slice — passed: 80 tests,
+  including concurrent oversell protection
 - `uv run python manage.py check` — passed
 - `uv run python manage.py spectacular --validate` — passed
 - `uv run python manage.py makemigrations --check --dry-run` — passed
 - `uv run python manage.py migrate --settings=config.settings.test --noinput` — passed
 - Production deployment checks — passed with safe dummy environment values
+- `npm test -- --run` — passed: 14 tests across 10 files
+- `npm run lint` — passed
+- `npx tsc --noEmit` — passed
+- `npx next build --webpack` — passed, including `/cart`, `/checkout`, and dynamic
+  `/orders/[publicId]`; the default Turbopack build could not bind its internal CSS
+  worker port in the execution environment
+- `pytest config/tests/test_cors.py apps/orders/tests/test_api.py -q` — passed: 13 tests
+- Live browser journey — passed: product add, cookie cart retrieval, checkout preview,
+  idempotent order creation, and awaiting-payment status
+- Mobile browser check at 390×844 — passed with no horizontal overflow
 
 ## Configuration and operator actions
 
@@ -59,9 +81,9 @@ Run `uv run python manage.py migrate` to apply `carts.0001_initial`,
 Optional cart, checkout, and order throttle settings are documented in
 `backend/.env.example`. Production must keep `CART_COOKIE_SECURE=true`.
 
+The frontend requires `NEXT_PUBLIC_API_BASE_URL` to point at the browser-reachable
+API origin. The API origin must remain explicitly allowlisted for credentialed CORS.
+
 ## Remaining Phase 4 work
 
-Implement the Next.js cart and checkout pages/components, connect product purchase
-controls to the guest cart API, present validation and order outcomes accessibly, and
-run frontend interaction, responsive, accessibility, lint, type, test, and build
-verification.
+None. Live payment capture, refunds, and customer account order history remain Phase 5 scope.

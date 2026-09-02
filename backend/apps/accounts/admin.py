@@ -8,7 +8,14 @@ from .models import User
 class BeanCoUserAdmin(UserAdmin):  # type: ignore[type-arg]
     model = User
     ordering = ("email",)
-    list_display = ("email", "first_name", "last_name", "is_staff", "is_active")
+    list_display = (
+        "email",
+        "first_name",
+        "last_name",
+        "email_verified_at",
+        "is_staff",
+        "is_active",
+    )
     search_fields = ("email", "first_name", "last_name")
     fieldsets = (
         (None, {"fields": ("email", "password")}),
@@ -25,6 +32,6 @@ class BeanCoUserAdmin(UserAdmin):  # type: ignore[type-arg]
                 )
             },
         ),
-        ("Important dates", {"fields": ("last_login", "date_joined")}),
+        ("Important dates", {"fields": ("email_verified_at", "last_login", "date_joined")}),
     )
     add_fieldsets = ((None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),)

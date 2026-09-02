@@ -1,8 +1,10 @@
 """Shared Django settings. Environment-specific modules refine these defaults."""
 
+from datetime import timedelta
 from pathlib import Path
 
 import environ
+from corsheaders.defaults import default_headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -30,6 +32,7 @@ INSTALLED_APPS = [
     "apps.communications",
     "apps.carts",
     "apps.orders",
+    "apps.payments",
 ]
 
 MIDDLEWARE = [
@@ -104,6 +107,11 @@ REST_FRAMEWORK = {
         "carts": env("CART_THROTTLE_RATE", default="60/hour"),
         "checkout": env("CHECKOUT_THROTTLE_RATE", default="20/hour"),
         "orders": env("ORDER_THROTTLE_RATE", default="10/hour"),
+        "registration": env("REGISTRATION_THROTTLE_RATE", default="5/hour"),
+        "login": env("LOGIN_THROTTLE_RATE", default="10/minute"),
+        "password_reset": env("PASSWORD_RESET_THROTTLE_RATE", default="5/hour"),
+        "account_auth": env("ACCOUNT_AUTH_THROTTLE_RATE", default="20/hour"),
+        "payments": env("PAYMENT_THROTTLE_RATE", default="20/hour"),
     },
 }
 
@@ -112,19 +120,53 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Versioned API for the BeanCo storefront.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    "ENUM_NAME_OVERRIDES": {
+        "PaymentAttemptStatusEnum": "apps.payments.models.PaymentAttempt.Status",
+        "OrderStatusEnum": "apps.orders.models.Order.Status",
+    },
 }
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["http://localhost:3000"])
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["http://localhost:3000"])
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = (*default_headers, "idempotency-key")
+
+SESSION_COOKIE_NAME = env("SESSION_COOKIE_NAME", default="beanco_sessionid")
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=not DEBUG)
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_NAME = env("CSRF_COOKIE_NAME", default="beanco_csrftoken")
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=not DEBUG)
+CSRF_COOKIE_SAMESITE = "Lax"
 
 CART_COOKIE_NAME = env("CART_COOKIE_NAME", default="beanco_cart")
 CART_COOKIE_MAX_AGE = 30 * 24 * 60 * 60
 CART_COOKIE_SECURE = env.bool("CART_COOKIE_SECURE", default=not DEBUG)
 
 EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+ACCOUNT_EMAIL_BACKEND = env(
+    "ACCOUNT_EMAIL_BACKEND", default="django.core.mail.backends.locmem.EmailBackend"
+)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="BeanCo <noreply@beanco.example>")
 STAFF_NOTIFICATION_EMAIL = env("STAFF_NOTIFICATION_EMAIL", default="partnerships@beanco.example")
+ACCOUNT_EMAIL_VERIFICATION_URL = env(
+    "ACCOUNT_EMAIL_VERIFICATION_URL", default="http://localhost:3000/account/verify-email"
+)
+ACCOUNT_PASSWORD_RESET_URL = env(
+    "ACCOUNT_PASSWORD_RESET_URL", default="http://localhost:3000/account/reset-password"
+)
+
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
+STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
+STRIPE_CHECKOUT_TTL = timedelta(minutes=30)
+STRIPE_SUCCESS_URL = env(
+    "STRIPE_SUCCESS_URL",
+    default="http://localhost:3000/orders/{order_id}?payment=return&session_id={CHECKOUT_SESSION_ID}",
+)
+STRIPE_CANCEL_URL = env(
+    "STRIPE_CANCEL_URL", default="http://localhost:3000/orders/{order_id}?payment=cancelled"
+)
 
 LOGGING = {
     "version": 1,
