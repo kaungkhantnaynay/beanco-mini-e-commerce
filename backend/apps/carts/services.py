@@ -3,7 +3,7 @@ import secrets
 from dataclasses import dataclass
 from datetime import timedelta
 from decimal import ROUND_HALF_UP, Decimal
-from typing import Any
+from typing import Any, TypedDict
 
 from django.db import transaction
 from django.utils import timezone
@@ -17,7 +17,17 @@ from .models import Cart, CartItem
 CART_LIFETIME = timedelta(days=30)
 MONEY_QUANTUM = Decimal("0.01")
 ZERO_MONEY = Decimal("0.00")
-STANDARD_SHIPPING_METHOD = {
+
+
+class ShippingMethod(TypedDict):
+    code: str
+    name: str
+    fee: Decimal
+    minimum_business_days: int
+    maximum_business_days: int
+
+
+STANDARD_SHIPPING_METHOD: ShippingMethod = {
     "code": "standard_th",
     "name": "Standard delivery",
     "fee": ZERO_MONEY,

@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "apps.inventory",
     "apps.communications",
     "apps.carts",
+    "apps.orders",
 ]
 
 MIDDLEWARE = [
@@ -102,6 +103,7 @@ REST_FRAMEWORK = {
         "newsletter": env("NEWSLETTER_THROTTLE_RATE", default="10/hour"),
         "carts": env("CART_THROTTLE_RATE", default="60/hour"),
         "checkout": env("CHECKOUT_THROTTLE_RATE", default="20/hour"),
+        "orders": env("ORDER_THROTTLE_RATE", default="10/hour"),
     },
 }
 

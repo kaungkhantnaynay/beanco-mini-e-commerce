@@ -9,7 +9,7 @@ orders, customer accounts, and payments through phased implementation.
 - Next.js 16.3, React 19, TypeScript, and Tailwind CSS frontend
 - Live Django-backed catalog, slug product pages, partnership inquiry, and newsletter forms
 - Django REST Framework backend foundation in `backend/`
-- Phases 0–3 complete; Phase 4 guest cart backend complete and order work in progress
+- Phases 0–3 complete; Phase 4 transactional backend complete and cart/checkout UI in progress
 
 ## Required reading before implementation
 

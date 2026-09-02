@@ -1,7 +1,8 @@
 # BeanCo backend
 
 The Django REST Framework backend serves the BeanCo catalog, inventory, guest cart,
-partnership inquiry, and newsletter domains through versioned JSON under `/api/v1/`.
+order, partnership inquiry, and newsletter domains through versioned JSON under
+`/api/v1/`.
 
 ## Setup
 
@@ -42,6 +43,8 @@ Endpoints:
 - `PATCH /api/v1/cart/items/{public_id}/`
 - `DELETE /api/v1/cart/items/{public_id}/`
 - `POST /api/v1/checkout/preview/`
+- `POST /api/v1/orders/`
+- `GET /api/v1/orders/{public_id}/status/`
 - `/admin/`
 
 `seed_catalog` idempotently imports the eight original products and their available
@@ -56,6 +59,17 @@ only so the cookie works over local HTTP.
 Checkout preview accepts a transient Thailand shipping address and the
 `standard_th` method. It does not store contact data; it revalidates the current
 catalog, stock, prices, and totals on every request.
+
+Order creation requires an `Idempotency-Key` header containing 16–128 safe
+characters. It snapshots the validated cart and shipping address, atomically deducts
+stock, and returns the existing order when the same request key is retried.
+
+Concurrency verification requires PostgreSQL. With a disposable test database set
+in `DATABASE_URL`, run:
+
+```bash
+uv run pytest --ds=config.settings.postgres_test
+```
 
 ## Verification
 

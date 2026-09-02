@@ -39,9 +39,9 @@ Transactional commerce follows after the catalog and API foundation are stable.
 
 ## Current status
 
-- Current phase: Phase 4 in progress; guest cart and checkout preview complete
-- Backend: Django/DRF catalog, inventory, communications, guest cart, and checkout preview complete
-- Database: PostgreSQL configured; initial migration verified against an empty PostgreSQL database
-- API: health, catalog reads, inquiry/newsletter writes, cart mutations, checkout preview, OpenAPI schema, and docs implemented
+- Current phase: Phase 4 in progress; transactional backend complete, frontend cart/checkout open
+- Backend: Django/DRF guest carts, checkout preview, idempotent orders, inventory locking, and staff order controls complete
+- Database: all migrations and concurrency behavior verified against an empty PostgreSQL 16 test database
+- API: health, catalog, communications, cart, checkout preview, order creation/status, OpenAPI schema, and docs implemented
 - Frontend: live typed catalog, slug details, inquiry/newsletter submissions, and five-minute catalog revalidation complete
-- Next gate: implement durable idempotent orders and concurrency-safe stock deduction
+- Next gate: implement and verify the Next.js cart and checkout experience

@@ -21,12 +21,12 @@ correct price and inventory behavior. Payment is not captured in this phase.
 - [x] Re-fetch prices and validate active products/variants on every mutation.
 - [x] Add backend-computed subtotal, discount, shipping, tax, and total fields.
 - [x] Implement address validation and available shipping methods.
-- [ ] Implement idempotent order creation inside a database transaction.
-- [ ] Snapshot all commercial order-line fields.
-- [ ] Protect stock changes against concurrent checkout.
+- [x] Implement idempotent order creation inside a database transaction.
+- [x] Snapshot all commercial order-line fields.
+- [x] Protect stock changes against concurrent checkout.
 - [ ] Add cart and checkout pages/components to Next.js.
-- [ ] Add staff order views and controlled status actions in Django Admin.
-- [ ] Test tampered prices, unavailable variants, insufficient stock, duplicate
+- [x] Add staff order views and controlled status actions in Django Admin.
+- [x] Test tampered prices, unavailable variants, insufficient stock, duplicate
       checkout requests, concurrency, permissions, and rollback behavior.
 
 ## API surface
@@ -34,8 +34,8 @@ correct price and inventory behavior. Payment is not captured in this phase.
 ```text
 GET    /api/v1/cart/
 POST   /api/v1/cart/items/
-PATCH  /api/v1/cart/items/{id}/
-DELETE /api/v1/cart/items/{id}/
+PATCH  /api/v1/cart/items/{public_id}/
+DELETE /api/v1/cart/items/{public_id}/
 POST   /api/v1/checkout/preview/
 POST   /api/v1/orders/
 GET    /api/v1/orders/{public_id}/status/
@@ -58,7 +58,6 @@ GET    /api/v1/orders/{public_id}/status/
 
 ## Progress note
 
-The guest cart and checkout-preview backend slices were completed on 2026-09-01.
-The approved commercial rules are recorded in ADR 0003. Order creation, inventory
-deduction, frontend cart/checkout UI, and staff order management remain open and
-must be implemented before Phase 4 is complete.
+The Phase 4 backend was completed on 2026-09-01, including PostgreSQL concurrency
+verification. The approved commercial rules are recorded in ADR 0003. The Next.js
+cart and checkout UI remains open and must be implemented before Phase 4 is complete.

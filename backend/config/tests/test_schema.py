@@ -22,6 +22,8 @@ def test_openapi_schema_is_available(client: Client) -> None:
         "/api/v1/cart/items/",
         "/api/v1/cart/items/{public_id}/",
         "/api/v1/checkout/preview/",
+        "/api/v1/orders/",
+        "/api/v1/orders/{public_id}/status/",
     }.issubset(schema["paths"])
     assert (
         schema["components"]["schemas"]["ProductVariant"]["properties"]["price"]["type"] == "string"
@@ -34,3 +36,6 @@ def test_openapi_schema_is_available(client: Client) -> None:
     assert cart_schema["total"]["type"] == "string"
     preview_schema = schema["components"]["schemas"]["CheckoutPreview"]["properties"]
     assert preview_schema["shipping_method"]["allOf"][0]["$ref"].endswith("/ShippingMethod")
+    order_schema = schema["components"]["schemas"]["Order"]["properties"]
+    assert order_schema["total"]["type"] == "string"
+    assert order_schema["public_id"]["format"] == "uuid"

@@ -57,6 +57,7 @@ class InventoryTransaction(models.Model):
         RESERVATION = "reservation", "Reservation"
         RELEASE = "release", "Reservation release"
         SALE = "sale", "Sale"
+        CANCELLATION = "cancellation", "Order cancellation"
 
     variant = models.ForeignKey(
         ProductVariant, on_delete=models.PROTECT, related_name="inventory_transactions"
