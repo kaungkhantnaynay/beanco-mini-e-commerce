@@ -8,14 +8,21 @@ from django.views.decorators.http import require_GET
 @require_GET
 def live(_: object) -> JsonResponse:
     """Report that the application process can receive requests."""
-    return JsonResponse({"status": "ok"})
+    response = JsonResponse({"status": "ok"})
+    response["Cache-Control"] = "no-store"
+    return response
 
 
 @require_GET
 def ready(_: object) -> JsonResponse:
     """Report database readiness without exposing connection details."""
     try:
-        connections["default"].ensure_connection()
+        with connections["default"].cursor() as cursor:
+            cursor.execute("SELECT 1")
     except DatabaseError:
-        return JsonResponse({"status": "unavailable"}, status=503)
-    return JsonResponse({"status": "ok"})
+        response = JsonResponse({"status": "unavailable"}, status=503)
+        response["Cache-Control"] = "no-store"
+        return response
+    response = JsonResponse({"status": "ok"})
+    response["Cache-Control"] = "no-store"
+    return response

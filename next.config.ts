@@ -6,6 +6,7 @@ const mediaBaseUrl = new URL(
 
 const nextConfig: NextConfig = {
   agentRules: false,
+  output: "standalone",
   images: {
     dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
     remotePatterns: [

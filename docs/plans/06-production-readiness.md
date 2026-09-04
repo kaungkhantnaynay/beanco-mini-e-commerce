@@ -7,20 +7,20 @@ procedures.
 
 ## Work items
 
-- [ ] Containerize frontend and backend with deterministic production builds.
+- [x] Containerize frontend and backend with deterministic production builds.
 - [ ] Provision managed PostgreSQL and private application connectivity.
 - [ ] Configure object storage/CDN for product media.
 - [ ] Configure HTTPS, trusted hosts/proxies, secure cookies, HSTS, CORS, and CSRF.
 - [ ] Store secrets in the deployment platform's secret manager.
-- [ ] Run migrations as an explicit, rollback-aware release step.
+- [x] Run migrations as an explicit, rollback-aware release step.
 - [ ] Configure transactional email and domain authentication.
 - [ ] Add application error reporting, structured logs, metrics, and alerting.
-- [ ] Define service-level health and availability signals.
+- [x] Define service-level health and availability signals.
 - [ ] Configure database/media backups and perform a restore drill.
 - [ ] Add rate limiting, upload limits, data retention, and privacy procedures.
 - [ ] Run dependency, secret, static-analysis, and Django deployment checks in CI.
 - [ ] Add smoke tests after deployment.
-- [ ] Document release, rollback, incident, data restore, and key rotation runbooks.
+- [x] Document release, rollback, incident, data restore, and key rotation runbooks.
 - [ ] Complete accessibility, performance, SEO, and security reviews.
 
 ## Release gates
@@ -52,3 +52,18 @@ procedures.
   unresolved or sensitive requests
 - Promotions, coupons, reviews, wishlists, and loyalty
 - Analytics and business reporting
+
+## Progress note
+
+Phase 6 started on 2026-09-04 after an explicit user-directed priority override; the
+real Stripe sandbox acceptance matrix remains deferred and is still a release gate.
+ADR 0006 records the container build and explicit migration strategy. Pinned frontend
+and backend production containers, a release command, expanded PostgreSQL/security CI,
+and a deployment smoke-test command are implemented. CI, release, and smoke-test work
+items remain open until they run successfully in the hosted pipeline and target
+environment. Privacy-safe request correlation, database-aware readiness checks,
+configurable request/product-image limits, service-level signal definitions, and the
+initial operations runbook set are also implemented. Provisional Thailand-oriented
+retention periods, a four-hour RTO, a one-hour RPO, email alerting, and owner/operator
+incident ownership are documented. The alert email, provider identifiers, retention
+review, and restore/alert tests remain launch work.

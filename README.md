@@ -10,7 +10,8 @@ orders, customer accounts, and payments through phased implementation.
 - Live Django-backed catalog, product purchase controls, anonymous cart, checkout,
   order confirmation, partnership inquiry, and newsletter forms
 - Django REST Framework backend foundation in `backend/`
-- Phases 0–4 complete; Phase 5 implementation complete with the real Stripe sandbox acceptance run pending
+- Phases 0–4 complete; Phase 5 implementation complete with its Stripe acceptance
+  matrix deferred; Phase 6 production readiness in progress
 
 ## Required reading before implementation
 
@@ -46,6 +47,12 @@ npm test
 npm run build
 ```
 
+Build the standalone production container with:
+
+```bash
+docker build --tag beanco-frontend .
+```
+
 ## Backend setup
 
 Install Python 3.12+ and [uv](https://docs.astral.sh/uv/), then:
@@ -62,6 +69,18 @@ uv run python manage.py runserver
 The backend runs at [http://localhost:8000](http://localhost:8000). Its health,
 schema, documentation, and verification commands are documented in
 [backend/README.md](backend/README.md).
+
+Build the production API container from the repository root with:
+
+```bash
+docker build --tag beanco-backend backend
+```
+
+Database migrations are deliberately not run when an application container starts.
+After confirming a usable backup, run `backend/scripts/release.sh` as the platform's
+pre-deploy command. Deployment and rollback details are recorded in
+[`docs/phase-6-implementation.md`](docs/phase-6-implementation.md), with operator
+procedures indexed under [`docs/operations/`](docs/operations/README.md).
 
 ## Plans
 

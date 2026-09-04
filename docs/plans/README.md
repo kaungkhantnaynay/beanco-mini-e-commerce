@@ -39,9 +39,9 @@ Transactional commerce follows after the catalog and API foundation are stable.
 
 ## Current status
 
-- Current phase: Phase 5 implementation complete; Stripe sandbox acceptance run pending
+- Current phase: Phase 6 production readiness in progress by explicit priority override; Stripe sandbox acceptance remains deferred
 - Backend: Django/DRF guest carts, idempotent orders, customer profiles/addresses/owned orders, Stripe Checkout Sessions, signed idempotent webhooks, refunds, reconciliation, inventory locking, and staff controls implemented
 - Database: all migrations and concurrency behavior verified against an empty PostgreSQL 16 test database
 - API: health, catalog, communications, accounts, addresses, owned orders, cart, checkout, cancellations/refunds, Stripe payment-session/webhook, OpenAPI schema, and docs implemented
 - Frontend: live catalog, anonymous commerce, complete account/authentication journey, owned order history, Stripe-hosted payment redirect, and cancellation/refund controls implemented
-- Next gate: run and record the complete Stripe test-mode acceptance matrix before starting Phase 6
+- Next gates: supply a monitored alert email, select a domain, review provider costs, and approve the provisional retention policy; then provision and verify the target environment and hosted CI

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -6,8 +7,9 @@ from django.db.models import Q
 
 def validate_product_image_size(image: object) -> None:
     size = getattr(image, "size", 0)
-    if size > 10 * 1024 * 1024:
-        raise ValidationError("Product images must be 10 MB or smaller.")
+    if size > settings.PRODUCT_IMAGE_MAX_BYTES:
+        max_megabytes = settings.PRODUCT_IMAGE_MAX_BYTES // (1024 * 1024)
+        raise ValidationError(f"Product images must be {max_megabytes} MB or smaller.")
 
 
 class Category(models.Model):

@@ -62,6 +62,17 @@ images, variants, and initial inventory. Local notifications use the configured
 console email backend. Production uses Resend's SMTP interface and requires
 `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, and `STAFF_NOTIFICATION_EMAIL`.
 
+Every response includes a UUID `X-Request-ID`; a valid incoming value is preserved so
+requests can be traced across the storefront and API. JSON access logs contain only the
+request ID, method, path without its query string, status, duration, and exception type.
+Do not add bodies, query strings, credentials, customer identity, or exception messages
+to request logs.
+
+Request and in-memory file thresholds are controlled by
+`DATA_UPLOAD_MAX_MEMORY_SIZE` and `FILE_UPLOAD_MAX_MEMORY_SIZE`. Product images also
+have an explicit `PRODUCT_IMAGE_MAX_BYTES` validation cap. The deployment proxy or
+platform must enforce a compatible total request-size limit.
+
 Guest carts use an opaque HTTP-only `beanco_cart` cookie. Keep
 `CART_COOKIE_SECURE=true` in production; the local environment template disables it
 only so the cookie works over local HTTP.
@@ -117,3 +128,24 @@ uv run python manage.py check --deploy --settings=config.settings.production
 The production check requires production environment variables such as
 `DJANGO_SECRET_KEY`, `DATABASE_URL`, `DJANGO_ALLOWED_HOSTS`, and
 `FRONTEND_ORIGIN`. Do not place their real values in this repository.
+
+## Production container and release
+
+From the repository root, build the API image with:
+
+```bash
+docker build --tag beanco-backend backend
+```
+
+The image starts Gunicorn as a non-root user and does not run migrations automatically.
+Configure the deployment platform to run this command once before new application
+replicas start:
+
+```bash
+backend/scripts/release.sh
+```
+
+Confirm a usable database backup before running the release command and review its
+migration plan. See [`docs/phase-6-implementation.md`](../docs/phase-6-implementation.md)
+and the [`docs/operations/`](../docs/operations/README.md) runbooks for rollback,
+health, recovery, incident, credential-rotation, and smoke-test guidance.

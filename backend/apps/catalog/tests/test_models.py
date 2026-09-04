@@ -4,6 +4,7 @@ from typing import cast
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.test import override_settings
 
 from apps.catalog.factories import ProductFactory, ProductImageFactory, ProductVariantFactory
 from apps.catalog.models import Product, ProductVariant, validate_product_image_size
@@ -54,3 +55,9 @@ def test_product_image_size_is_limited() -> None:
 
     with pytest.raises(ValidationError):
         validate_product_image_size(oversized_image)
+
+
+@override_settings(PRODUCT_IMAGE_MAX_BYTES=1024 * 1024)
+def test_product_image_size_uses_configured_limit() -> None:
+    with pytest.raises(ValidationError, match="1 MB or smaller"):
+        validate_product_image_size(SimpleNamespace(size=1024 * 1024 + 1))

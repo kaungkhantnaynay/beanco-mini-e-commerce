@@ -1,4 +1,4 @@
-name: Frontend checks
+name: Application checks
 
 on:
   push:
@@ -9,34 +9,94 @@ permissions:
 
 jobs:
   frontend:
-    name: Lint, type-check, and build
+    name: Frontend quality and dependency checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24.20.0
           cache: npm
       - run: npm ci
       - run: npm run lint
       - run: npx tsc --noEmit
+      - run: npm test
       - run: npm run build
+      - run: npm audit --audit-level=high
 
   backend:
-    name: Backend lint, type-check, and test
+    name: Backend quality, PostgreSQL, and dependency checks
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: beanco_test
+          POSTGRES_USER: beanco
+          POSTGRES_PASSWORD: beanco
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U beanco -d beanco_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://beanco:beanco@127.0.0.1:5432/beanco_test
     defaults:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v9
+        with:
+          version: "0.12.9"
       - run: uv sync --frozen --group dev
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy apps config
-      - run: uv run pytest
+      - run: uv run pytest --ds=config.settings.postgres_test
       - run: uv run python manage.py check
+      - run: uv run python manage.py makemigrations --check --dry-run
+      - run: uv run python manage.py spectacular --validate --file /tmp/beanco-openapi.yaml
+      - run: uv run pip-audit
+      - name: Validate production settings
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.production
+          DJANGO_SECRET_KEY: ci-only-secret-key-with-more-than-fifty-characters-123456789
+          DJANGO_ALLOWED_HOSTS: api.example.test
+          FRONTEND_ORIGIN: https://shop.example.test
+          AWS_S3_ENDPOINT_URL: https://example.r2.cloudflarestorage.com
+          AWS_ACCESS_KEY_ID: ci-access-key
+          AWS_SECRET_ACCESS_KEY: ci-secret-key
+          AWS_STORAGE_BUCKET_NAME: ci-bucket
+          EMAIL_HOST_PASSWORD: ci-email-password
+          DEFAULT_FROM_EMAIL: BeanCo <noreply@example.test>
+          STAFF_NOTIFICATION_EMAIL: staff@example.test
+          STRIPE_SECRET_KEY: sk_test_ci_only
+          STRIPE_WEBHOOK_SECRET: whsec_ci_only
+          STRIPE_SUCCESS_URL: https://shop.example.test/orders/{order_id}?payment=return&session_id={CHECKOUT_SESSION_ID}
+          STRIPE_CANCEL_URL: https://shop.example.test/orders/{order_id}?payment=cancelled
+        run: uv run python manage.py check --deploy
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v3
+
+  containers:
+    name: Production container builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build frontend image
+        run: docker build --tag beanco-frontend:ci .
+      - name: Build backend image
+        run: docker build --tag beanco-backend:ci backend
