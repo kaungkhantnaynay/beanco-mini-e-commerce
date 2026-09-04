@@ -16,7 +16,15 @@ class ReadOnlyPaymentAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
 
 @admin.register(PaymentAttempt)
 class PaymentAttemptAdmin(ReadOnlyPaymentAdmin):
-    list_display = ("public_id", "order", "status", "amount", "currency", "created_at")
+    list_display = (
+        "public_id",
+        "order",
+        "status",
+        "amount",
+        "currency",
+        "refunded_at",
+        "created_at",
+    )
     list_filter = ("status", "currency")
     search_fields = ("public_id", "order__public_id", "provider_checkout_session_id")
     exclude = ("checkout_url", "idempotency_key_hash")

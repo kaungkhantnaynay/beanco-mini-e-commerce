@@ -9,6 +9,8 @@ from .views import (
     PasswordResetConfirmView,
     PasswordResetRequestView,
     RegistrationView,
+    SavedAddressDetailView,
+    SavedAddressListCreateView,
 )
 
 urlpatterns = [
@@ -24,4 +26,10 @@ urlpatterns = [
         name="auth-password-reset-confirm",
     ),
     path("account/", CurrentAccountView.as_view(), name="account-current"),
+    path("account/addresses/", SavedAddressListCreateView.as_view(), name="account-address-list"),
+    path(
+        "account/addresses/<uuid:public_id>/",
+        SavedAddressDetailView.as_view(),
+        name="account-address-detail",
+    ),
 ]

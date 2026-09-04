@@ -31,6 +31,7 @@ STORAGES = {
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 ACCOUNT_EMAIL_BACKEND = EMAIL_BACKEND
+PAYMENT_EMAIL_BACKEND = EMAIL_BACKEND
 EMAIL_HOST = env("EMAIL_HOST", default="smtp.resend.com")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="resend")

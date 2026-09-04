@@ -8,6 +8,7 @@ import pytest
 from django.test import Client, override_settings
 from django.urls import reverse
 
+from apps.accounts.models import User
 from apps.orders.factories import OrderFactory
 from apps.orders.models import Order
 from apps.payments.models import PaymentAttempt, WebhookEvent
@@ -66,3 +67,20 @@ def test_payment_session_hides_orders_without_guest_or_account_ownership(client:
     assert response.status_code == 404
     assert response.json()["detail"] == "Order not found."
     assert PaymentAttempt.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_customer_can_cancel_only_their_awaiting_payment_order(client: Client) -> None:
+    owner = User.objects.create_user("owner@example.test", "Strong-Password-456!")
+    other = User.objects.create_user("other@example.test", "Strong-Password-456!")
+    order = cast(Order, OrderFactory(user=owner))
+    url = reverse("account-order-cancel", args=[order.public_id])
+
+    client.force_login(other)
+    assert client.post(url).status_code == 404
+
+    client.force_login(owner)
+    response = client.post(url)
+
+    assert response.status_code == 200
+    assert response.json()["status"] == Order.Status.CANCELLED

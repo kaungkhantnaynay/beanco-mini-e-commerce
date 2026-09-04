@@ -148,6 +148,9 @@ EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.
 ACCOUNT_EMAIL_BACKEND = env(
     "ACCOUNT_EMAIL_BACKEND", default="django.core.mail.backends.locmem.EmailBackend"
 )
+PAYMENT_EMAIL_BACKEND = env(
+    "PAYMENT_EMAIL_BACKEND", default="django.core.mail.backends.locmem.EmailBackend"
+)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="BeanCo <noreply@beanco.example>")
 STAFF_NOTIFICATION_EMAIL = env("STAFF_NOTIFICATION_EMAIL", default="partnerships@beanco.example")
 ACCOUNT_EMAIL_VERIFICATION_URL = env(

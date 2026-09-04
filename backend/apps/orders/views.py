@@ -1,6 +1,10 @@
+from typing import cast
+
 from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
 from rest_framework import status
 from rest_framework.exceptions import NotFound
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
@@ -62,3 +66,25 @@ class OrderStatusView(APIView):
         except (Order.DoesNotExist, ValueError) as exc:
             raise NotFound("Order not found.") from exc
         return Response(OrderStatusSerializer(order).data)
+
+
+class AccountOrderListView(ListAPIView[Order]):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = OrderStatusSerializer
+
+    def get_queryset(self):  # type: ignore[no-untyped-def]
+        return Order.objects.filter(user_id=cast(int, self.request.user.pk)).order_by("-created_at")
+
+
+class AccountOrderDetailView(RetrieveAPIView[Order]):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = OrderSerializer
+    lookup_field = "public_id"
+    lookup_url_kwarg = "public_id"
+
+    def get_queryset(self):  # type: ignore[no-untyped-def]
+        return (
+            Order.objects.filter(user_id=cast(int, self.request.user.pk))
+            .select_related("shipping_address")
+            .prefetch_related("items")
+        )

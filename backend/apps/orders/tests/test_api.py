@@ -8,6 +8,7 @@ from django.test import Client
 from django.urls import reverse
 from rest_framework.throttling import ScopedRateThrottle
 
+from apps.accounts.models import User
 from apps.carts.models import Cart
 from apps.catalog.factories import ProductVariantFactory
 from apps.catalog.models import ProductVariant
@@ -257,6 +258,28 @@ def test_unexpected_inventory_failure_rolls_back_order_address_stock_and_cart(
     cart.refresh_from_db()
     assert inventory.available_quantity == 10
     assert cart.status == Cart.Status.ACTIVE
+
+
+@pytest.mark.django_db
+def test_account_order_endpoints_list_and_return_only_owned_orders(client: Client) -> None:
+    owner = User.objects.create_user("owner@example.test", "Strong-Password-456!")
+    other = User.objects.create_user("other@example.test", "Strong-Password-456!")
+    client.force_login(owner)
+    add_cart_item(client, quantity=1)
+    created = post_order(client, "owned-order-key-00001")
+    order_id = created.json()["public_id"]
+
+    listed = client.get(reverse("account-order-list"))
+    detail = client.get(reverse("account-order-detail", args=[order_id]))
+
+    assert listed.status_code == 200
+    assert [item["public_id"] for item in listed.json()["results"]] == [order_id]
+    assert detail.status_code == 200
+    assert detail.json()["customer_email"] == "mali.example@example.test"
+
+    client.force_login(other)
+    assert client.get(reverse("account-order-detail", args=[order_id])).status_code == 404
+    assert client.get(reverse("account-order-list")).json()["results"] == []
 
 
 @pytest.mark.django_db

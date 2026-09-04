@@ -1,4 +1,5 @@
-from typing import Any
+from datetime import timedelta
+from typing import Any, cast
 from urllib.parse import parse_qs, urlparse
 
 import pytest
@@ -12,7 +13,12 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode
 
 from apps.accounts.factories import UserFactory
-from apps.accounts.models import User
+from apps.accounts.models import SavedAddress, User
+from apps.carts.models import Cart, CartItem
+from apps.carts.services import hash_cart_token
+from apps.catalog.factories import ProductVariantFactory
+from apps.catalog.models import ProductVariant
+from apps.inventory.factories import InventoryRecordFactory
 
 PASSWORD = "Strong-Password-456!"
 
@@ -199,3 +205,101 @@ def test_password_reset_is_neutral_and_confirmation_invalidates_old_password() -
     user.refresh_from_db()
     assert user.check_password(PASSWORD) is False
     assert user.check_password("Replacement-Password-789!") is True
+
+
+def saved_address_payload(**overrides: object) -> dict[str, object]:
+    return {
+        "label": "Home",
+        "is_default": False,
+        "full_name": "Mali Example",
+        "phone": "081-234-5678",
+        "address_line_1": "99 Fictional Coffee Lane",
+        "address_line_2": "",
+        "subdistrict": "Khlong Tan Nuea",
+        "district": "Watthana",
+        "province": "Bangkok",
+        "postal_code": "10110",
+        "country_code": "TH",
+        **overrides,
+    }
+
+
+@pytest.mark.django_db
+def test_customer_can_update_profile_and_manage_only_their_addresses(client: Client) -> None:
+    user = User.objects.create_user("profile@example.test", PASSWORD)
+    other = User.objects.create_user("other@example.test", PASSWORD)
+    other_address = SavedAddress.objects.create(user=other, **saved_address_payload(label="Other"))
+    client.force_login(user)
+
+    profile = client.patch(
+        reverse("account-current"),
+        {"first_name": " Mali ", "last_name": "Customer"},
+        content_type="application/json",
+    )
+    created = client.post(
+        reverse("account-address-list"),
+        saved_address_payload(),
+        content_type="application/json",
+    )
+
+    assert profile.status_code == 200
+    assert profile.json()["first_name"] == "Mali"
+    assert created.status_code == 201
+    assert created.json()["is_default"] is True
+    address_id = created.json()["public_id"]
+
+    updated = client.patch(
+        reverse("account-address-detail", args=[address_id]),
+        {"label": "Office", "phone": "+66 812345678"},
+        content_type="application/json",
+    )
+    forbidden = client.patch(
+        reverse("account-address-detail", args=[other_address.public_id]),
+        {"label": "Stolen"},
+        content_type="application/json",
+    )
+    listed = client.get(reverse("account-address-list"))
+
+    assert updated.status_code == 200
+    assert updated.json()["label"] == "Office"
+    assert updated.json()["phone"] == "+66812345678"
+    assert forbidden.status_code == 404
+    assert [item["public_id"] for item in listed.json()] == [address_id]
+    assert client.delete(reverse("account-address-detail", args=[address_id])).status_code == 204
+
+
+@pytest.mark.django_db
+def test_login_merges_guest_and_account_carts_without_exceeding_stock() -> None:
+    user = User.objects.create_user("cart@example.test", PASSWORD)
+    user.email_verified_at = timezone.now()
+    user.save(update_fields=("email_verified_at",))
+    variant = cast(ProductVariant, ProductVariantFactory(sku="MERGE-CART"))
+    InventoryRecordFactory(variant=variant, available_quantity=3)
+    previous = Cart.objects.create(
+        user=user,
+        token_hash=hash_cart_token("previous-secret"),
+        expires_at=timezone.now() + timedelta(days=1),
+    )
+    CartItem.objects.create(cart=previous, variant=variant, quantity=2)
+    client, csrf = csrf_client()
+    assert (
+        client.post(
+            reverse("cart-item-create"),
+            {"variant_sku": variant.sku, "quantity": 2},
+            content_type="application/json",
+        ).status_code
+        == 201
+    )
+
+    signed_in = post_json(
+        client,
+        "auth-login",
+        {"email": user.email, "password": PASSWORD},
+        csrf,
+    )
+
+    assert signed_in.status_code == 200
+    merged = client.get(reverse("cart-detail")).json()
+    assert merged["items"][0]["quantity"] == 3
+    assert Cart.objects.get(pk=previous.pk).status == Cart.Status.CONVERTED
+    assert Cart.objects.get(public_id=merged["public_id"]).user == user

@@ -10,6 +10,7 @@ from apps.orders.models import Order
 from apps.orders.services import transition_order, validate_idempotency_key
 
 from .models import PaymentAttempt, WebhookEvent
+from .notifications import send_order_confirmation, send_payment_failure, send_refund_confirmation
 from .providers import PaymentProvider
 
 
@@ -116,17 +117,22 @@ def process_webhook_event(event: Mapping[str, Any]) -> bool:
             attempt.save(update_fields=("provider_payment_intent_id", "status", "updated_at"))
             if attempt.order.status == Order.Status.AWAITING_PAYMENT:
                 transition_order(order=attempt.order, target_status=Order.Status.CONFIRMED)
+                transaction.on_commit(lambda: send_order_confirmation(attempt.order), robust=True)
             record.outcome = "paid"
     elif event_type in ("checkout.session.expired", "checkout.session.async_payment_failed"):
-        attempt.status = (
-            PaymentAttempt.Status.EXPIRED
-            if event_type == "checkout.session.expired"
-            else PaymentAttempt.Status.FAILED
-        )
-        attempt.save(update_fields=("status", "updated_at"))
-        if attempt.order.status == Order.Status.AWAITING_PAYMENT:
-            transition_order(order=attempt.order, target_status=Order.Status.CANCELLED)
-        record.outcome = "unpaid_stock_released"
+        if attempt.status in (PaymentAttempt.Status.PAID, PaymentAttempt.Status.REFUNDED):
+            record.outcome = "ignored_failure_after_payment"
+        else:
+            attempt.status = (
+                PaymentAttempt.Status.EXPIRED
+                if event_type == "checkout.session.expired"
+                else PaymentAttempt.Status.FAILED
+            )
+            attempt.save(update_fields=("status", "updated_at"))
+            if attempt.order.status == Order.Status.AWAITING_PAYMENT:
+                transition_order(order=attempt.order, target_status=Order.Status.CANCELLED)
+                transaction.on_commit(lambda: send_payment_failure(attempt.order), robust=True)
+            record.outcome = "unpaid_stock_released"
     else:
         record.outcome = "ignored_event_type"
     record.processed_at = timezone.now()
@@ -150,3 +156,93 @@ def get_order_for_payment(
     if not owns_account_order and not owns_guest_order:
         raise NotFound("Order not found.")
     return order
+
+
+@transaction.atomic
+def cancel_customer_order(*, order: Order, actor: object, provider: PaymentProvider) -> Order:
+    locked_order = Order.objects.select_for_update().get(pk=order.pk)
+    if locked_order.status == Order.Status.AWAITING_PAYMENT:
+        open_attempt = (
+            PaymentAttempt.objects.select_for_update()
+            .filter(order=locked_order, status=PaymentAttempt.Status.OPEN)
+            .first()
+        )
+        if open_attempt and open_attempt.provider_checkout_session_id:
+            try:
+                provider.expire_checkout_session(
+                    session_id=open_attempt.provider_checkout_session_id
+                )
+            except Exception as exc:
+                raise ValidationError(
+                    {"payment": ["The active payment session could not be cancelled. Try again."]}
+                ) from exc
+            open_attempt.status = PaymentAttempt.Status.EXPIRED
+            open_attempt.save(update_fields=("status", "updated_at"))
+        return transition_order(
+            order=locked_order, target_status=Order.Status.CANCELLED, actor=actor
+        )
+
+    if locked_order.status != Order.Status.CONFIRMED:
+        raise ValidationError(
+            {"order": ["Only awaiting-payment or confirmed orders can be cancelled."]}
+        )
+    attempt = (
+        PaymentAttempt.objects.select_for_update()
+        .filter(order=locked_order, status=PaymentAttempt.Status.PAID)
+        .first()
+    )
+    if attempt is None or not attempt.provider_payment_intent_id:
+        raise ValidationError({"payment": ["This order has no refundable payment."]})
+    try:
+        refund_id = provider.refund(
+            payment_intent_id=attempt.provider_payment_intent_id,
+            amount_minor=int(attempt.amount * 100),
+            idempotency_key=f"refund-{attempt.public_id}",
+        )
+    except Exception as exc:
+        raise ValidationError(
+            {"payment": ["The refund could not be issued. The order was not cancelled."]}
+        ) from exc
+    attempt.provider_refund_id = refund_id
+    attempt.refunded_at = timezone.now()
+    attempt.status = PaymentAttempt.Status.REFUNDED
+    attempt.save(update_fields=("provider_refund_id", "refunded_at", "status", "updated_at"))
+    cancelled = transition_order(
+        order=locked_order, target_status=Order.Status.CANCELLED, actor=actor
+    )
+    transaction.on_commit(lambda: send_refund_confirmation(cancelled), robust=True)
+    return cancelled
+
+
+def reconcile_payment_attempt(*, attempt: PaymentAttempt, provider: PaymentProvider) -> str:
+    if not attempt.provider_checkout_session_id:
+        return "skipped_missing_session"
+    state = provider.retrieve_payment_state(session_id=attempt.provider_checkout_session_id)
+    with transaction.atomic():
+        locked = (
+            PaymentAttempt.objects.select_for_update().select_related("order").get(pk=attempt.pk)
+        )
+        if locked.status == PaymentAttempt.Status.REFUNDED:
+            return "already_refunded"
+        if state.payment_status == "paid":
+            if locked.order.status == Order.Status.CANCELLED:
+                return "manual_review_paid_cancelled_order"
+            locked.provider_payment_intent_id = state.payment_intent_id
+            locked.status = PaymentAttempt.Status.PAID
+            locked.save(update_fields=("provider_payment_intent_id", "status", "updated_at"))
+            if locked.order.status == Order.Status.AWAITING_PAYMENT:
+                transition_order(order=locked.order, target_status=Order.Status.CONFIRMED)
+                transaction.on_commit(lambda: send_order_confirmation(locked.order), robust=True)
+                return "confirmed_paid_order"
+            return "already_paid"
+        if state.status == "expired" and locked.status in (
+            PaymentAttempt.Status.CREATING,
+            PaymentAttempt.Status.OPEN,
+        ):
+            locked.status = PaymentAttempt.Status.EXPIRED
+            locked.save(update_fields=("status", "updated_at"))
+            if locked.order.status == Order.Status.AWAITING_PAYMENT:
+                transition_order(order=locked.order, target_status=Order.Status.CANCELLED)
+                transaction.on_commit(lambda: send_payment_failure(locked.order), robust=True)
+                return "cancelled_expired_order"
+        return "in_sync"

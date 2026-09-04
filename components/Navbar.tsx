@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Coffee, ShoppingBag } from 'lucide-react';
+import { Menu, X, Coffee, ShoppingBag, UserRound } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import Container from './Container';
@@ -69,6 +69,17 @@ const Navbar = () => {
                     {/* Actions */}
                     <div className="flex items-center gap-3">
                         <ButtonLink
+                            href="/account"
+                            variant="ghost"
+                            size="sm"
+                            aria-label="Your account"
+                            aria-current={pathname.startsWith('/account') ? 'page' : undefined}
+                            className={cn(isHeroMode ? 'text-white hover:bg-white/10 hover:text-white' : '')}
+                        >
+                            <UserRound className="h-5 w-5" aria-hidden="true" />
+                            <span className="ml-2 hidden lg:inline">Account</span>
+                        </ButtonLink>
+                        <ButtonLink
                             href="/cart"
                             variant="ghost"
                             size="sm"
@@ -126,6 +137,7 @@ const Navbar = () => {
                                         {link.label}
                                     </Link>
                                 ))}
+                                <Link href="/account" className="text-sm font-medium text-foreground hover:text-primary" onClick={() => setIsMobileMenuOpen(false)}>Your account</Link>
                                 <ButtonLink href="/contact" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
                                     Partner With Us
                                 </ButtonLink>

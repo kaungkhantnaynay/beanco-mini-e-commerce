@@ -5,6 +5,7 @@ from datetime import timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any, TypedDict
 
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
 from rest_framework.exceptions import NotFound, ValidationError
@@ -47,8 +48,10 @@ def hash_cart_token(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
-def get_or_create_cart(token: str | None) -> CartAccess:
+def get_or_create_cart(token: str | None, user: object | None = None) -> CartAccess:
     now = timezone.now()
+    user_model = get_user_model()
+    authenticated_user = user if isinstance(user, user_model) else None
     if token:
         cart = (
             Cart.objects.filter(
@@ -59,18 +62,92 @@ def get_or_create_cart(token: str | None) -> CartAccess:
             .first()
         )
         if cart is not None:
-            if cart.expires_at > now:
+            if cart.expires_at > now and (
+                cart.user_id is None
+                or authenticated_user is None
+                or cart.user_id == authenticated_user.pk
+            ):
+                if authenticated_user is not None and cart.user_id is None:
+                    cart.user = authenticated_user
+                    cart.save(update_fields=("user", "updated_at"))
                 touch_cart(cart)
                 return CartAccess(cart=cart, token=token, set_cookie=True)
-            cart.status = Cart.Status.EXPIRED
-            cart.save(update_fields=("status", "updated_at"))
+            if cart.expires_at <= now:
+                cart.status = Cart.Status.EXPIRED
+                cart.save(update_fields=("status", "updated_at"))
+
+    if authenticated_user is not None:
+        existing = (
+            Cart.objects.filter(
+                user=authenticated_user,
+                status=Cart.Status.ACTIVE,
+                expires_at__gt=now,
+            )
+            .prefetch_related("items__variant__product", "items__variant__inventory")
+            .first()
+        )
+        if existing is not None:
+            new_token = secrets.token_urlsafe(32)
+            existing.token_hash = hash_cart_token(new_token)
+            existing.expires_at = now + CART_LIFETIME
+            existing.save(update_fields=("token_hash", "expires_at", "updated_at"))
+            return CartAccess(cart=existing, token=new_token, set_cookie=True)
 
     new_token = secrets.token_urlsafe(32)
     cart = Cart.objects.create(
         token_hash=hash_cart_token(new_token),
+        user=authenticated_user,
         expires_at=now + CART_LIFETIME,
     )
     return CartAccess(cart=cart, token=new_token, set_cookie=True)
+
+
+@transaction.atomic
+def merge_guest_cart(*, user: object, token: str | None) -> Cart | None:
+    """Attach the browser cart and merge older account carts without exceeding stock."""
+
+    user_model = get_user_model()
+    if not isinstance(user, user_model) or not token:
+        return None
+    guest = (
+        Cart.objects.select_for_update()
+        .filter(
+            token_hash=hash_cart_token(token),
+            status=Cart.Status.ACTIVE,
+            expires_at__gt=timezone.now(),
+        )
+        .first()
+    )
+    if guest is None or (guest.user_id is not None and guest.user_id != user.pk):
+        return None
+
+    guest.user = user
+    guest.save(update_fields=("user", "updated_at"))
+    previous_carts = list(
+        Cart.objects.select_for_update()
+        .filter(user=user, status=Cart.Status.ACTIVE)
+        .exclude(pk=guest.pk)
+        .order_by("pk")
+    )
+    for previous in previous_carts:
+        for source in previous.items.select_related("variant__inventory").all():
+            destination = CartItem.objects.filter(cart=guest, variant=source.variant).first()
+            current = destination.quantity if destination else 0
+            available = source.variant.inventory.available_to_sell
+            merged_quantity = min(current + source.quantity, available, 99)
+            if merged_quantity < 1:
+                continue
+            if destination:
+                destination.quantity = merged_quantity
+                destination.save(update_fields=("quantity", "updated_at"))
+            else:
+                source.cart = guest
+                source.quantity = merged_quantity
+                source.save(update_fields=("cart", "quantity", "updated_at"))
+        previous.status = Cart.Status.CONVERTED
+        previous.save(update_fields=("status", "updated_at"))
+    touch_cart(guest)
+    return guest
 
 
 def touch_cart(cart: Cart) -> None:

@@ -9,12 +9,12 @@ handling raw card data on BeanCo servers.
 
 ### Accounts
 
-- [ ] Implement registration, email verification, login, logout, and password reset.
-- [ ] Use secure HTTP-only session cookies and CSRF protection for browser sessions.
-- [ ] Add customer profile and saved-address management.
-- [ ] Merge a guest cart safely after login.
-- [ ] Add authenticated order list/detail endpoints and Next.js account pages.
-- [ ] Prevent account and password-reset enumeration.
+- [x] Implement registration, email verification, login, logout, and password reset.
+- [x] Use secure HTTP-only session cookies and CSRF protection for browser sessions.
+- [x] Add customer profile and saved-address management.
+- [x] Merge a guest cart safely after login.
+- [x] Add authenticated order list/detail endpoints and Next.js account pages.
+- [x] Prevent account and password-reset enumeration.
 
 ### Payments
 
@@ -26,9 +26,9 @@ handling raw card data on BeanCo servers.
 - [x] Verify webhook signatures using the raw body.
 - [x] Process webhook events idempotently and outside long request transactions.
 - [x] Transition orders only through allowed payment/order states.
-- [ ] Send order confirmation and payment-failure notifications.
-- [ ] Add controlled cancellation and refund workflows.
-- [ ] Reconcile orders against provider payment state.
+- [x] Send order confirmation and payment-failure notifications.
+- [x] Add controlled cancellation and refund workflows.
+- [x] Reconcile orders against provider payment state.
 
 ## Acceptance criteria
 
@@ -52,9 +52,10 @@ Phase 5 started on 2026-09-02 with the backend authentication/session foundation
 ADR 0004 records the approved secure-cookie, CSRF, verification-token, neutral-response,
 and token-safe email delivery rules. Registration, verification, login, logout,
 current-account, and password-reset APIs now have automated security coverage. The
-account work items remain open until the corresponding Next.js flows, profile/address
-management, guest-cart merge, and owned order experience are complete. ADR 0005 now
-selects Stripe-hosted Checkout with THB cards and PromptPay. Payment-attempt storage,
-Checkout Session creation, raw-body signature verification, idempotent webhook
-processing, paid confirmation, and unpaid-expiry stock release are implemented. The
-notifications, refunds, reconciliation, and full Stripe sandbox journeys remain open.
+The Next.js authentication flows, profile and saved-address management, safe guest-cart
+merge, and strictly owned order history are now implemented. ADR 0005 selects
+Stripe-hosted Checkout with THB cards and PromptPay. Payment-attempt storage, Checkout
+Session creation, raw-body signature verification, idempotent webhook processing,
+notifications, customer cancellation/full-refund controls, and provider reconciliation
+are implemented. Phase 5 remains in progress only until real Stripe test-mode purchase,
+failure, expiry, cancellation, refund, and webhook journeys are executed and recorded.

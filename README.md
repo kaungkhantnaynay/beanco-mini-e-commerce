@@ -10,7 +10,7 @@ orders, customer accounts, and payments through phased implementation.
 - Live Django-backed catalog, product purchase controls, anonymous cart, checkout,
   order confirmation, partnership inquiry, and newsletter forms
 - Django REST Framework backend foundation in `backend/`
-- Phases 0–4 complete; Phase 5 account authentication and Stripe Checkout foundations in progress
+- Phases 0–4 complete; Phase 5 implementation complete with the real Stripe sandbox acceptance run pending
 
 ## Required reading before implementation
 

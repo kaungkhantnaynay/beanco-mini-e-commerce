@@ -30,7 +30,10 @@ class CartAPIView(APIView):
     throttle_scope = "carts"
 
     def get_access(self, request: Request) -> CartAccess:
-        return get_or_create_cart(request.COOKIES.get(settings.CART_COOKIE_NAME))
+        return get_or_create_cart(
+            request.COOKIES.get(settings.CART_COOKIE_NAME),
+            request.user if request.user.is_authenticated else None,
+        )
 
     def response_with_cookie(self, response: Response, access: CartAccess) -> Response:
         if access.set_cookie:

@@ -4,7 +4,9 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
-from .models import User
+from apps.carts.serializers import ShippingAddressSerializer
+
+from .models import SavedAddress, User
 
 
 class StrictInputSerializer(serializers.Serializer[Any]):
@@ -82,6 +84,28 @@ class AccountSerializer(serializers.ModelSerializer[User]):
 
     def get_email_verified(self, obj: User) -> bool:
         return obj.email_verified_at is not None
+
+
+class ProfileUpdateSerializer(StrictInputSerializer):
+    first_name = serializers.CharField(max_length=150, allow_blank=True)
+    last_name = serializers.CharField(max_length=150, allow_blank=True)
+
+
+class SavedAddressSerializer(ShippingAddressSerializer):
+    public_id = serializers.UUIDField(read_only=True)
+    label = serializers.CharField(min_length=1, max_length=40)  # type: ignore[assignment]
+    is_default = serializers.BooleanField(default=False)
+    created_at = serializers.DateTimeField(read_only=True)
+    updated_at = serializers.DateTimeField(read_only=True)
+
+    def create(self, validated_data: dict[str, Any]) -> SavedAddress:
+        return SavedAddress.objects.create(**validated_data)
+
+    def update(self, instance: SavedAddress, validated_data: dict[str, Any]) -> SavedAddress:
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+        return instance
 
 
 class DetailSerializer(serializers.Serializer[dict[str, str]]):

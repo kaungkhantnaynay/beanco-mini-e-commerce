@@ -27,11 +27,13 @@ class PaymentAttempt(models.Model):
     provider_payment_intent_id = models.CharField(
         max_length=255, blank=True, db_index=True, editable=False
     )
+    provider_refund_id = models.CharField(max_length=255, blank=True, editable=False)
     checkout_url = models.URLField(max_length=1000, blank=True, editable=False)
     amount = models.DecimalField(max_digits=12, decimal_places=2, editable=False)
     currency = models.CharField(max_length=3, default="THB", editable=False)
     status = models.CharField(max_length=16, choices=Status.choices, default=Status.CREATING)
     expires_at = models.DateTimeField(null=True, blank=True)
+    refunded_at = models.DateTimeField(null=True, blank=True, editable=False)
     last_error_code = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

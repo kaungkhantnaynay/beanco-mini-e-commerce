@@ -17,6 +17,14 @@ class CheckoutSessionResult:
     expires_at: datetime
 
 
+@dataclass(frozen=True)
+class ProviderPaymentState:
+    session_id: str
+    status: str
+    payment_status: str
+    payment_intent_id: str
+
+
 class WebhookVerificationError(Exception):
     pass
 
@@ -29,6 +37,10 @@ class PaymentProvider(Protocol):
     def construct_event(self, *, payload: bytes, signature: str) -> Mapping[str, Any]: ...
 
     def refund(self, *, payment_intent_id: str, amount_minor: int, idempotency_key: str) -> str: ...
+
+    def expire_checkout_session(self, *, session_id: str) -> None: ...
+
+    def retrieve_payment_state(self, *, session_id: str) -> ProviderPaymentState: ...
 
 
 class StripePaymentProvider:
@@ -91,6 +103,25 @@ class StripePaymentProvider:
             {"idempotency_key": idempotency_key},
         )
         return refund.id
+
+    def expire_checkout_session(self, *, session_id: str) -> None:
+        self.client.v1.checkout.sessions.expire(session_id)
+
+    def retrieve_payment_state(self, *, session_id: str) -> ProviderPaymentState:
+        session = self.client.v1.checkout.sessions.retrieve(session_id)
+        payment_intent = session.payment_intent
+        return ProviderPaymentState(
+            session_id=session.id,
+            status=session.status or "unknown",
+            payment_status=session.payment_status or "unknown",
+            payment_intent_id=(
+                payment_intent
+                if isinstance(payment_intent, str)
+                else payment_intent.id
+                if payment_intent is not None
+                else ""
+            ),
+        )
 
 
 def get_payment_provider() -> PaymentProvider:

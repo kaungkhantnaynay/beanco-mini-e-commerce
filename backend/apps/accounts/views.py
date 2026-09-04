@@ -1,5 +1,6 @@
 from typing import Any, cast
 
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
@@ -12,7 +13,7 @@ from django.utils.http import urlsafe_base64_decode
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
+from rest_framework.exceptions import AuthenticationFailed, NotFound, ValidationError
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -20,8 +21,9 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from apps.api.serializers import ApiErrorSerializer
+from apps.carts.services import merge_guest_cart
 
-from .models import User
+from .models import SavedAddress, User
 from .notifications import send_password_reset_email, send_verification_email
 from .serializers import (
     AccountSerializer,
@@ -30,7 +32,9 @@ from .serializers import (
     LoginSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
+    ProfileUpdateSerializer,
     RegistrationSerializer,
+    SavedAddressSerializer,
 )
 from .tokens import email_verification_token
 
@@ -146,6 +150,10 @@ class LoginView(CsrfProtectedAPIView):
         )
         if user is None or user.email_verified_at is None:
             raise AuthenticationFailed("Unable to sign in with those credentials.")
+        merge_guest_cart(
+            user=user,
+            token=request.COOKIES.get(settings.CART_COOKIE_NAME),
+        )
         login(request._request, user)
         return Response(AccountSerializer(user).data)
 
@@ -170,6 +178,94 @@ class CurrentAccountView(APIView):
     )
     def get(self, request: Request) -> Response:
         return Response(AccountSerializer(cast(User, request.user)).data)
+
+    @extend_schema(
+        request=ProfileUpdateSerializer,
+        responses={200: AccountSerializer, 400: ApiErrorSerializer, 403: ApiErrorSerializer},
+    )
+    def patch(self, request: Request) -> Response:
+        serializer = ProfileUpdateSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        user = cast(User, request.user)
+        for field, value in serializer.validated_data.items():
+            setattr(user, field, str(value).strip())
+        if serializer.validated_data:
+            user.save(update_fields=(*serializer.validated_data.keys(),))
+        return Response(AccountSerializer(user).data)
+
+
+def _save_address(
+    *, serializer: SavedAddressSerializer, user: User, instance: SavedAddress | None = None
+) -> SavedAddress:
+    with transaction.atomic():
+        wants_default = bool(
+            serializer.validated_data.get(
+                "is_default", instance.is_default if instance is not None else False
+            )
+        )
+        if instance is None and not SavedAddress.objects.filter(user=user).exists():
+            wants_default = True
+        if wants_default:
+            current_defaults = SavedAddress.objects.filter(user=user, is_default=True)
+            if instance is not None:
+                current_defaults = current_defaults.exclude(pk=instance.pk)
+            current_defaults.update(is_default=False)
+            serializer.validated_data["is_default"] = True
+        return cast(
+            SavedAddress,
+            serializer.save(user=user) if instance is None else serializer.save(),
+        )
+
+
+class SavedAddressListCreateView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(responses={200: SavedAddressSerializer(many=True), 403: ApiErrorSerializer})
+    def get(self, request: Request) -> Response:
+        addresses = SavedAddress.objects.filter(user_id=cast(User, request.user).pk)
+        return Response(SavedAddressSerializer(addresses, many=True).data)
+
+    @extend_schema(
+        request=SavedAddressSerializer,
+        responses={201: SavedAddressSerializer, 400: ApiErrorSerializer, 403: ApiErrorSerializer},
+    )
+    def post(self, request: Request) -> Response:
+        serializer = SavedAddressSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        address = _save_address(serializer=serializer, user=cast(User, request.user))
+        return Response(SavedAddressSerializer(address).data, status=status.HTTP_201_CREATED)
+
+
+class SavedAddressDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, request: Request, public_id: str) -> SavedAddress:
+        try:
+            return SavedAddress.objects.get(
+                user_id=cast(User, request.user).pk, public_id=public_id
+            )
+        except (SavedAddress.DoesNotExist, ValueError) as exc:
+            raise NotFound("Saved address not found.") from exc
+
+    @extend_schema(
+        request=SavedAddressSerializer,
+        responses={200: SavedAddressSerializer, 400: ApiErrorSerializer, 404: ApiErrorSerializer},
+    )
+    def patch(self, request: Request, public_id: str) -> Response:
+        address = self.get_object(request, public_id)
+        serializer = SavedAddressSerializer(address, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        saved = _save_address(
+            serializer=serializer,
+            user=cast(User, request.user),
+            instance=address,
+        )
+        return Response(SavedAddressSerializer(saved).data)
+
+    @extend_schema(responses={204: None, 404: ApiErrorSerializer})
+    def delete(self, request: Request, public_id: str) -> Response:
+        self.get_object(request, public_id).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PasswordResetRequestView(CsrfProtectedAPIView):
