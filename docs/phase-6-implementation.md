@@ -46,7 +46,8 @@ BACKEND_URL=https://api.example.com \
 
 - The complete real Stripe sandbox acceptance matrix was deferred by explicit user
   direction and remains required before launch.
-- Vercel, Render PostgreSQL/private networking, Cloudflare R2, and Resend provisioning.
+- Vercel, Render API/private database connectivity, Supabase Storage, and Resend
+  provisioning.
 - Target-environment webhook and email verification.
 - Monitoring/alert routing and a successful backup restoration drill.
 - Accountant/privacy-adviser review of the provisional retention periods and a tested
@@ -58,20 +59,23 @@ BACKEND_URL=https://api.example.com \
 - Frontend lint and TypeScript checks — passed.
 - Frontend component tests — passed: 20 tests across 13 files.
 - Frontend webpack production build and standalone output check — passed.
-- Backend Ruff, formatting, and mypy checks — passed: 134 typed source files.
-- Backend tests — passed: 102 tests; 1 PostgreSQL-only concurrency test skipped locally.
+- Backend Ruff, formatting, and mypy checks — passed: 135 typed source files.
+- Backend tests — passed: 103 tests; 1 PostgreSQL-only concurrency test skipped locally.
 - Django system check, migration drift check, and OpenAPI validation — passed.
 - Backend dependency audit — passed with no known vulnerabilities after upgrades.
 - Django production deployment check — passed with representative non-secret values.
 - Request correlation, safe-log allow-listing, upload configuration, and database
   readiness tests — passed as part of the backend suite.
+- Supabase-compatible production storage settings — passed an isolated settings test
+  covering endpoint, region, path-style addressing, SigV4, and private URL controls.
 - Release command — passed against a fresh disposable database, including deployment
   checks, migration plan output, and all migrations.
 - Digest-pinned frontend and backend Docker builds — passed.
 - Non-root container runtime and local deployment smoke checks — passed.
 - Frontend npm advisory audit — passed with no known vulnerabilities after updating
   the transitive development-only `@humanfs/node` package to 0.16.8.
-- Hosted GitHub Actions run and PostgreSQL CI result — pending push.
+- Hosted GitHub Actions run for commit `040bf99` — passed: frontend, backend/PostgreSQL,
+  secret scan, and both production container builds.
 
 ## Initial operating decisions
 
@@ -82,3 +86,9 @@ BACKEND_URL=https://api.example.com \
 - A provisional Thailand-oriented retention schedule is recorded in
   [`docs/operations/data-retention-and-privacy.md`](operations/data-retention-and-privacy.md).
 - No paid resource may be created without presenting its cost to the user first.
+- ADR 0007 replaces R2 with a private Supabase Storage bucket for preview media. Django
+  authentication and the Render PostgreSQL preview database remain unchanged. Production
+  media use remains gated on cost review, independent backup, and a restore drill.
+- Production storage settings accept Supabase's region and endpoint explicitly and use
+  path-style addressing, SigV4 signing, non-overwriting object names, and private signed
+  URLs with a 15-minute default lifetime.

@@ -36,3 +36,7 @@ for deployment-oriented work later.
 
 The temporary PostgreSQL container was stopped and automatically removed after
 verification.
+
+The provider name above records the Phase 1 implementation state. ADR 0007 later
+selected Supabase Storage's S3-compatible endpoint; the required configuration update is
+tracked as Phase 6 work and does not alter Phase 1's historical verification result.

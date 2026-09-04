@@ -69,10 +69,11 @@ jobs:
           DJANGO_SECRET_KEY: ci-only-secret-key-with-more-than-fifty-characters-123456789
           DJANGO_ALLOWED_HOSTS: api.example.test
           FRONTEND_ORIGIN: https://shop.example.test
-          AWS_S3_ENDPOINT_URL: https://example.r2.cloudflarestorage.com
+          AWS_S3_ENDPOINT_URL: https://project-ref.storage.supabase.co/storage/v1/s3
           AWS_ACCESS_KEY_ID: ci-access-key
           AWS_SECRET_ACCESS_KEY: ci-secret-key
           AWS_STORAGE_BUCKET_NAME: ci-bucket
+          AWS_S3_REGION_NAME: ap-southeast-1
           EMAIL_HOST_PASSWORD: ci-email-password
           DEFAULT_FROM_EMAIL: BeanCo <noreply@example.test>
           STAFF_NOTIFICATION_EMAIL: staff@example.test

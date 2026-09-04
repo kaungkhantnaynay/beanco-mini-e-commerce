@@ -10,14 +10,16 @@ replace placeholders with secrets in this repository.
 - [`key-rotation.md`](key-rotation.md)
 - [`health-and-availability.md`](health-and-availability.md)
 - [`data-retention-and-privacy.md`](data-retention-and-privacy.md)
+- [`supabase-storage.md`](supabase-storage.md)
 
-Production service inventory:
+Service inventory and targets:
 
 | Component | Approved provider | Identifier/owner |
 | --- | --- | --- |
 | Storefront | Vercel | TBD-before-launch |
 | API and PostgreSQL | Render Singapore | TBD-before-launch |
-| Product media | Cloudflare R2 | TBD-before-launch |
+| Product media (preview) | Supabase Storage Free | TBD-before-preview |
+| Product media (production) | Supabase Storage candidate | Pending cost, backup, and restore approval |
 | Transactional email | Resend | TBD-before-launch |
 | Payments | Stripe | TBD-before-launch |
 | Incident lead | Internal operator | BeanCo owner/operator |

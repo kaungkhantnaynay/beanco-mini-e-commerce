@@ -85,6 +85,10 @@ The owner approved the following decisions. Their durable records are
 | Tax, shipping, refunds | Not applicable to the catalog/inquiry launch; B2B terms are quoted by staff. | These must be approved before Phase 4 introduces checkout. |
 | Operations providers | Vercel storefront; Render Singapore Django and PostgreSQL; Cloudflare R2 media; Resend transactional email. Payment-provider selection is deferred to Phase 5 evaluation. | The selected services fit the current architecture while avoiding premature payment integration. |
 
+The table records the Phase 0 decision at the time it was accepted. ADR 0007 supersedes
+the Cloudflare R2 portion with Supabase Storage during Phase 6; the other provider
+decisions remain unchanged.
+
 ## Next step
 
 Phase 0 is complete. Phase 1 may now scaffold Django/DRF and PostgreSQL according to

@@ -44,4 +44,4 @@ Transactional commerce follows after the catalog and API foundation are stable.
 - Database: all migrations and concurrency behavior verified against an empty PostgreSQL 16 test database
 - API: health, catalog, communications, accounts, addresses, owned orders, cart, checkout, cancellations/refunds, Stripe payment-session/webhook, OpenAPI schema, and docs implemented
 - Frontend: live catalog, anonymous commerce, complete account/authentication journey, owned order history, Stripe-hosted payment redirect, and cancellation/refund controls implemented
-- Next gates: supply a monitored alert email, select a domain, review provider costs, and approve the provisional retention policy; then provision and verify the target environment and hosted CI
+- Next gates: integrate and verify Supabase preview media, supply a monitored alert email, select a domain, review production provider costs, and approve the provisional retention policy; then deploy and verify the target environment

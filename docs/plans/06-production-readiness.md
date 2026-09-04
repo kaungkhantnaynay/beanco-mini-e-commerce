@@ -18,7 +18,7 @@ procedures.
 - [x] Define service-level health and availability signals.
 - [ ] Configure database/media backups and perform a restore drill.
 - [ ] Add rate limiting, upload limits, data retention, and privacy procedures.
-- [ ] Run dependency, secret, static-analysis, and Django deployment checks in CI.
+- [x] Run dependency, secret, static-analysis, and Django deployment checks in CI.
 - [ ] Add smoke tests after deployment.
 - [x] Document release, rollback, incident, data restore, and key rotation runbooks.
 - [ ] Complete accessibility, performance, SEO, and security reviews.
@@ -59,11 +59,14 @@ Phase 6 started on 2026-09-04 after an explicit user-directed priority override;
 real Stripe sandbox acceptance matrix remains deferred and is still a release gate.
 ADR 0006 records the container build and explicit migration strategy. Pinned frontend
 and backend production containers, a release command, expanded PostgreSQL/security CI,
-and a deployment smoke-test command are implemented. CI, release, and smoke-test work
-items remain open until they run successfully in the hosted pipeline and target
-environment. Privacy-safe request correlation, database-aware readiness checks,
+and a deployment smoke-test command are implemented. The hosted CI work item is verified;
+target-environment release and smoke verification remain open. Privacy-safe request
+correlation, database-aware readiness checks,
 configurable request/product-image limits, service-level signal definitions, and the
 initial operations runbook set are also implemented. Provisional Thailand-oriented
 retention periods, a four-hour RTO, a one-hour RPO, email alerting, and owner/operator
 incident ownership are documented. The alert email, provider identifiers, retention
-review, and restore/alert tests remain launch work.
+review, and restore/alert tests remain launch work. ADR 0007 selects Supabase Storage for
+private preview media after R2's usage-billing model was declined. Compatible Django
+storage configuration is implemented; credential provisioning and end-to-end media
+verification remain open.

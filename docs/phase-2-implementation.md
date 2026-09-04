@@ -43,7 +43,9 @@ failure persistence, and the non-null OpenAPI price contract.
 ## Operator actions
 
 Run `uv run python manage.py migrate`, then `uv run python manage.py seed_catalog`.
-Production must provide the documented R2 and Resend SMTP environment variables.
+Production must provide the documented S3-compatible media and Resend SMTP environment
+variables. ADR 0007 selects Supabase Storage for preview media; the Phase 6 integration
+must be verified before production use.
 
 ## Next step
 

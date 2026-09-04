@@ -106,6 +106,14 @@ batches:
 uv run python manage.py reconcile_payments --limit 100
 ```
 
+Preview product media uses a private Supabase Storage bucket through its
+S3-compatible endpoint. Production requires the endpoint, access key, secret key,
+bucket name, and project region. The backend uses path-style addressing, SigV4
+signing, private signed URLs, and a 15-minute signed-URL lifetime by default. Keep
+S3 access keys server-side only. See
+[`docs/operations/supabase-storage.md`](../docs/operations/supabase-storage.md) for
+provisioning and verification.
+
 Concurrency verification requires PostgreSQL. With a disposable test database set
 in `DATABASE_URL`, run:
 

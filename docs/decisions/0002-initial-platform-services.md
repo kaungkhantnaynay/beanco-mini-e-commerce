@@ -1,6 +1,6 @@
 # ADR 0002: Initial platform services
 
-- Status: accepted
+- Status: accepted; product-media portion superseded by ADR 0007
 - Date: 2026-08-25
 
 ## Context and constraints
@@ -16,9 +16,9 @@ production data, and environment-managed secrets.
   preview and production deployments.
 - Deploy the Django API and its managed PostgreSQL database as Render services in
   Singapore, keeping both on Render's regional private network.
-- Store product media in Cloudflare R2 using its S3-compatible API. Use a private
-  bucket and application-controlled public delivery URLs; select the bucket location
-  during provisioning based on the available R2 locations.
+- Store product media in Cloudflare R2 using its S3-compatible API. This original
+  media-provider decision was superseded by ADR 0007 after billing preferences were
+  reviewed during Phase 6.
 - Send transactional mail with Resend from a dedicated verified subdomain, such as
   `mail.example.com`, after SPF, DKIM, and DMARC are configured.
 - Do not select or integrate a payment provider in Phase 0. Phase 5 must evaluate

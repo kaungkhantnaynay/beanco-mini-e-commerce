@@ -7,8 +7,9 @@ initial recovery objectives are:
 - Recovery point objective (RPO): lose no more than one hour of committed data.
 - Backup retention: 35 rolling days.
 
-The selected Render and R2 plans must be checked against these targets before purchase.
-The targets remain provisional until an isolated restore drill demonstrates them.
+The selected Render and production media-storage plans must be checked against these
+targets before purchase. The targets remain provisional until isolated database and
+media restore drills demonstrate them.
 
 ## PostgreSQL restore drill
 
@@ -28,8 +29,16 @@ The targets remain provisional until an isolated restore drill demonstrates them
 
 ## Product media restore drill
 
-1. Restore a versioned R2 backup into a new private bucket.
+Supabase Storage does not provide S3 object versioning, so the primary bucket is not a
+backup. The Free preview bucket contains no production/customer media and has no recovery
+guarantee. Before production launch, configure an independent scheduled export with 35
+rolling days of retention, then verify it as follows:
+
+1. Restore an export into a new private Supabase Storage bucket or an approved isolated
+   S3-compatible target.
 2. Verify object count, representative checksums, content types, and access controls.
 3. Point a temporary backend configuration to the restored bucket and verify product
-   images through approved public delivery URLs.
-4. Record duration and evidence, then remove the temporary bucket after approval.
+   images through signed delivery URLs.
+4. Confirm deleted test objects cannot be recovered from the primary Supabase bucket and
+   are recoverable only from the independent backup within its retention window.
+5. Record duration and evidence, then remove the temporary bucket after approval.

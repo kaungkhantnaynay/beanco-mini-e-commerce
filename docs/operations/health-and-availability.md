@@ -14,7 +14,7 @@
 
 Monitor storefront/API availability, readiness failures, HTTP 5xx rate, request latency,
 container restarts, PostgreSQL connections/storage, webhook failures/backlog, payment
-reconciliation outcomes, email delivery failures, and R2 errors. Backend request logs use
+reconciliation outcomes, email delivery failures, and object-storage errors. Backend request logs use
 `X-Request-ID` to correlate method, path, status, duration, and exception type without
 capturing query strings, bodies, account identity, or exception messages.
 

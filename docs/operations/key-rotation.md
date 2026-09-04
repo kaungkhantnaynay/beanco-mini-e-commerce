@@ -23,7 +23,8 @@ manager and never print them in logs, tickets, chat, or shell history.
   readiness, then revoke the old role/password.
 - **Stripe API key:** update the backend secret and verify a read-only test-mode request
   before revocation. Rotate webhook signing secrets separately and verify signed delivery.
-- **R2:** verify media read/write using the replacement access key before revocation.
+- **Supabase Storage S3:** generated S3 keys are server-only, provide broad access across
+  the project's buckets, and bypass Storage RLS. Rotate every server-side consumer,
+  verify private media write/read/delete behavior, then revoke the old key.
 - **Resend:** send to an approved internal test recipient before revocation.
 - **GitHub/Vercel/Render tokens:** review installation scope and remove unused grants.
-
