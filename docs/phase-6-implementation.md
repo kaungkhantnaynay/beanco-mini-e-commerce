@@ -59,8 +59,8 @@ BACKEND_URL=https://api.example.com \
 - Frontend lint and TypeScript checks — passed.
 - Frontend component tests — passed: 20 tests across 13 files.
 - Frontend webpack production build and standalone output check — passed.
-- Backend Ruff, formatting, and mypy checks — passed: 135 typed source files.
-- Backend tests — passed: 103 tests; 1 PostgreSQL-only concurrency test skipped locally.
+- Backend Ruff, formatting, and mypy checks — passed: 136 typed source files.
+- Backend tests — passed: 105 tests; 1 PostgreSQL-only concurrency test skipped locally.
 - Django system check, migration drift check, and OpenAPI validation — passed.
 - Backend dependency audit — passed with no known vulnerabilities after upgrades.
 - Django production deployment check — passed with representative non-secret values.
@@ -68,6 +68,7 @@ BACKEND_URL=https://api.example.com \
   readiness tests — passed as part of the backend suite.
 - Supabase-compatible production storage settings — passed an isolated settings test
   covering endpoint, region, path-style addressing, SigV4, and private URL controls.
+- Runtime port binding — passed for Render's port 10000 and the local default port 8000.
 - Release command — passed against a fresh disposable database, including deployment
   checks, migration plan output, and all migrations.
 - Digest-pinned frontend and backend Docker builds — passed.
@@ -92,3 +93,5 @@ BACKEND_URL=https://api.example.com \
 - Production storage settings accept Supabase's region and endpoint explicitly and use
   path-style addressing, SigV4 signing, non-overwriting object names, and private signed
   URLs with a 15-minute default lifetime.
+- The backend container startup command binds Gunicorn to the deployment platform's
+  runtime `PORT`, with port 8000 retained as the local/container default.

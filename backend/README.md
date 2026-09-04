@@ -146,6 +146,8 @@ docker build --tag beanco-backend backend
 ```
 
 The image starts Gunicorn as a non-root user and does not run migrations automatically.
+Gunicorn binds to the runtime `PORT` supplied by the deployment platform and defaults
+to port `8000` when the variable is absent.
 Configure the deployment platform to run this command once before new application
 replicas start:
 
