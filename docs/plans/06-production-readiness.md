@@ -75,3 +75,16 @@ ADR 0008 connects the separate Customer Support AI service through a same-origin
 Next.js route. The storefront widget, in-memory conversation credentials, BeanCO
 knowledge pack, and offline evaluation are implemented. Production support-service
 deployment and environment configuration remain open.
+Local-device acceptance testing now auto-allows the development workstation's active
+LAN IPv4 addresses, preventing Next.js from blocking its client runtime when the
+storefront is opened by network URL. Custom local hostnames remain explicitly
+configurable through `BEANCO_DEV_ALLOWED_ORIGINS`.
+Development media URLs now serve the catalog's managed product images directly from
+`MEDIA_ROOT`, with regression coverage, so local storefront testing no longer shows
+broken images while production continues to use object storage.
+A repository-wide cleanup found no orphaned routes, components, backend modules, or
+dependencies. Unused theme declarations were removed without changing storefront
+behavior; intentionally separate product assets and historical implementation records
+were retained. Ineffective local settings-module and debug entries were also removed
+from the backend environment template because the runtime entry points select those
+settings explicitly.

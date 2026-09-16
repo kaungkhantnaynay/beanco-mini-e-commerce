@@ -1,11 +1,15 @@
 import type { NextConfig } from "next";
 
+import { getAllowedDevOrigins } from "./lib/config/dev-origins";
+
 const mediaBaseUrl = new URL(
   process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? "http://localhost:8000/media",
 );
+const allowedDevOrigins = getAllowedDevOrigins();
 
 const nextConfig: NextConfig = {
   agentRules: false,
+  ...(allowedDevOrigins ? { allowedDevOrigins } : {}),
   output: "standalone",
   images: {
     dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",

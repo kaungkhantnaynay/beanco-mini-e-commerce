@@ -58,8 +58,10 @@ Endpoints:
 - `/admin/`
 
 `seed_catalog` idempotently imports the eight original products and their available
-images, variants, and initial inventory. Local notifications use the configured
-console email backend. Production uses Resend's SMTP interface and requires
+images, variants, and initial inventory. In development, Django serves those managed
+files from `/media/`; production media is delivered by the configured object-storage
+backend. Local notifications use the configured console email backend. Production uses
+Resend's SMTP interface and requires
 `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, and `STAFF_NOTIFICATION_EMAIL`.
 
 Every response includes a UUID `X-Request-ID`; a valid incoming value is preserved so
