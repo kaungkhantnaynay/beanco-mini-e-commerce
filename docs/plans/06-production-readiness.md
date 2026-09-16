@@ -48,8 +48,9 @@ procedures.
 - Contract/minimum-quantity and customer-specific pricing
 - Purchase-order and invoice payment terms
 - Recurring office coffee orders/subscriptions
-- Automated customer-service chatbot for common questions, with human handoff for
-  unresolved or sensitive requests
+- [x] Automated customer-service chatbot for common questions, with human handoff for
+  unresolved or sensitive requests (storefront integration and BeanCO knowledge pack complete;
+  production service deployment remains a release task)
 - Promotions, coupons, reviews, wishlists, and loyalty
 - Analytics and business reporting
 
@@ -70,3 +71,7 @@ review, and restore/alert tests remain launch work. ADR 0007 selects Supabase St
 private preview media after R2's usage-billing model was declined. Compatible Django
 storage configuration is implemented; credential provisioning and end-to-end media
 verification remain open.
+ADR 0008 connects the separate Customer Support AI service through a same-origin
+Next.js route. The storefront widget, in-memory conversation credentials, BeanCO
+knowledge pack, and offline evaluation are implemented. Production support-service
+deployment and environment configuration remain open.

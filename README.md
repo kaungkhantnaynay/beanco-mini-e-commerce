@@ -38,6 +38,18 @@ used for commerce and inquiry/newsletter submissions. `NEXT_PUBLIC_MEDIA_BASE_UR
 public media origin for `next/image`. Catalog reads revalidate every five minutes;
 form submissions are never cached.
 
+`SUPPORT_API_BASE_URL` is the server-only origin of the Customer Support AI service.
+For local development, run that service with its BeanCO knowledge pack on port 8001:
+
+```bash
+cd "/path/to/Customer Support"
+KNOWLEDGE_BASE_DIR=data/knowledge_beanco uv run uvicorn app.main:app --port 8001
+```
+
+The storefront sends chat messages through `/api/support/chat`; the upstream service
+origin is not exposed to browser code. Support conversation credentials stay in memory,
+and a page refresh starts a new conversation.
+
 Verification commands:
 
 ```bash

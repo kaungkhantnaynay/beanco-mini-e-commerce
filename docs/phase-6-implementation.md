@@ -26,6 +26,12 @@ Status: in progress — repository production and operations foundation implemen
 - Added configurable request-memory, file-memory, and product-image limits.
 - Added release/rollback, incident, restore, key-rotation, health/availability, and
   retention/privacy runbooks under [`docs/operations/`](operations/README.md).
+- Connected the separate Customer Support AI service through a server-only Next.js
+  proxy and added an accessible, responsive storefront support widget with human
+  escalation status.
+- Added a BeanCO-specific support knowledge pack and offline evaluation dataset in
+  the Customer Support AI project. Conversation credentials remain in browser memory,
+  and no Django account, order, address, or payment data is sent to the assistant.
 
 ## Operator requirements
 
@@ -53,6 +59,8 @@ BACKEND_URL=https://api.example.com \
 - Accountant/privacy-adviser review of the provisional retention periods and a tested
   privacy-request process.
 - Accessibility, performance, SEO, and manual security reviews.
+- Production deployment and monitoring of the Customer Support AI service, plus the
+  `SUPPORT_API_BASE_URL` environment value in the storefront runtime.
 
 ## Verification
 
@@ -77,6 +85,9 @@ BACKEND_URL=https://api.example.com \
   the transitive development-only `@humanfs/node` package to 0.16.8.
 - Hosted GitHub Actions run for commit `040bf99` — passed: frontend, backend/PostgreSQL,
   secret scan, and both production container builds.
+- Support proxy and widget component tests — passed locally, including conversation
+  continuity without browser storage and safe behavior when the upstream is not configured.
+- BeanCO support knowledge evaluation — passed locally without API calls.
 
 ## Initial operating decisions
 
@@ -93,5 +104,7 @@ BACKEND_URL=https://api.example.com \
 - Production storage settings accept Supabase's region and endpoint explicitly and use
   path-style addressing, SigV4 signing, non-overwriting object names, and private signed
   URLs with a 15-minute default lifetime.
+- ADR 0008 keeps the FastAPI assistant as a bounded support service behind a same-origin
+  Next.js route. The browser receives neither its service origin nor server credentials.
 - The backend container startup command binds Gunicorn to the deployment platform's
   runtime `PORT`, with port 8000 retained as the local/container default.
