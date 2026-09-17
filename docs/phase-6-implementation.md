@@ -32,6 +32,9 @@ Status: in progress — repository production and operations foundation implemen
 - Added a BeanCO-specific support knowledge pack and offline evaluation dataset in
   the Customer Support AI project. Conversation credentials remain in browser memory,
   and no Django account, order, address, or payment data is sent to the assistant.
+- Added a required server-only token to the Vercel support proxy, forwarded it through
+  `X-Support-Token`, and increased the proxy timeout to 30 seconds so the backend's
+  bounded 20-second OpenAI call can finish before the proxy aborts.
 
 ## Operator requirements
 
@@ -65,7 +68,7 @@ BACKEND_URL=https://api.example.com \
 ## Verification
 
 - Frontend lint and TypeScript checks — passed.
-- Frontend component tests — passed: 20 tests across 13 files.
+- Frontend component and route tests — passed: 28 tests across 16 files.
 - Frontend webpack production build and standalone output check — passed.
 - Backend Ruff, formatting, and mypy checks — passed: 136 typed source files.
 - Backend tests — passed: 105 tests; 1 PostgreSQL-only concurrency test skipped locally.
@@ -86,7 +89,8 @@ BACKEND_URL=https://api.example.com \
 - Hosted GitHub Actions run for commit `040bf99` — passed: frontend, backend/PostgreSQL,
   secret scan, and both production container builds.
 - Support proxy and widget component tests — passed locally, including conversation
-  continuity without browser storage and safe behavior when the upstream is not configured.
+  continuity without browser storage, server-only token forwarding, and safe behavior
+  when either upstream setting is not configured.
 - BeanCO support knowledge evaluation — passed locally without API calls.
 
 ## Initial operating decisions

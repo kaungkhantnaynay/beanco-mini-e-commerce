@@ -61,6 +61,8 @@ public media origin for `next/image`. Catalog reads revalidate every five minute
 form submissions are never cached.
 
 `SUPPORT_API_BASE_URL` is the server-only origin of the Customer Support AI service.
+`SUPPORT_API_TOKEN` is the matching server-only shared secret. Neither value may use a
+`NEXT_PUBLIC_` prefix.
 For local development, run that service with its BeanCO knowledge pack on port 8001:
 
 ```bash
@@ -69,8 +71,10 @@ KNOWLEDGE_BASE_DIR=data/knowledge_beanco uv run uvicorn app.main:app --port 8001
 ```
 
 The storefront sends chat messages through `/api/support/chat`; the upstream service
-origin is not exposed to browser code. Support conversation credentials stay in memory,
-and a page refresh starts a new conversation.
+origin and service token are not exposed to browser code. The proxy sends the token in
+`X-Support-Token`, waits up to 30 seconds for the bounded upstream request, and fails
+safely when either server setting is missing. Support conversation credentials stay in
+memory, and a page refresh starts a new conversation.
 
 Verification commands:
 

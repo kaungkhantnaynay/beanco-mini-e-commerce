@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const SUPPORT_TIMEOUT_MS = 12_000;
+const SUPPORT_TIMEOUT_MS = 30_000;
 
 type SupportProxyRequest = {
   message?: unknown;
@@ -8,9 +8,17 @@ type SupportProxyRequest = {
   conversation_token?: unknown;
 };
 
-function supportApiUrl(): string | null {
+type SupportApiConfig = {
+  token: string;
+  url: string;
+};
+
+function supportApiConfig(): SupportApiConfig | null {
   const configured = process.env.SUPPORT_API_BASE_URL?.trim();
-  return configured ? `${configured.replace(/\/+$/, "")}/chat` : null;
+  const token = process.env.SUPPORT_API_TOKEN?.trim();
+  return configured && token
+    ? { token, url: `${configured.replace(/\/+$/, "")}/chat` }
+    : null;
 }
 
 function invalidRequest(body: SupportProxyRequest): string | null {
@@ -34,8 +42,8 @@ function invalidRequest(body: SupportProxyRequest): string | null {
 }
 
 export async function POST(request: Request) {
-  const url = supportApiUrl();
-  if (!url) {
+  const config = supportApiConfig();
+  if (!config) {
     return NextResponse.json(
       { code: "support_not_configured", detail: "BeanCO support is not configured yet." },
       { status: 503 },
@@ -60,9 +68,13 @@ export async function POST(request: Request) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), SUPPORT_TIMEOUT_MS);
   try {
-    const response = await fetch(url, {
+    const response = await fetch(config.url, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-Support-Token": config.token,
+      },
       body: JSON.stringify(body),
       cache: "no-store",
       signal: controller.signal,

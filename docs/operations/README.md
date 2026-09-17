@@ -11,6 +11,7 @@ replace placeholders with secrets in this repository.
 - [`health-and-availability.md`](health-and-availability.md)
 - [`data-retention-and-privacy.md`](data-retention-and-privacy.md)
 - [`supabase-storage.md`](supabase-storage.md)
+- [`support-service-deployment.md`](support-service-deployment.md)
 
 Service inventory and targets:
 
@@ -18,6 +19,7 @@ Service inventory and targets:
 | --- | --- | --- |
 | Storefront | Vercel | TBD-before-launch |
 | API and PostgreSQL | Render Singapore | TBD-before-launch |
+| Customer support API and PostgreSQL | Render Singapore | TBD-before-launch |
 | Product media (preview) | Supabase Storage Free | TBD-before-preview |
 | Product media (production) | Supabase Storage candidate | Pending cost, backup, and restore approval |
 | Transactional email | Resend | TBD-before-launch |
