@@ -2,7 +2,6 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
-from django.conf import settings
 from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -101,6 +100,8 @@ CATEGORIES = {
     "drinkware": ("Drinkware", "Cups and travel drinkware.", 2),
 }
 
+SEED_IMAGE_DIR = Path(__file__).resolve().parents[2] / "seed_images"
+
 
 class Command(BaseCommand):
     help = "Idempotently import the eight original storefront products."
@@ -173,7 +174,7 @@ class Command(BaseCommand):
                 product_image.image.delete(save=False)
             product_image.image = ""
         else:
-            source_path = Path(settings.BASE_DIR).parent / "public" / "images" / source
+            source_path = SEED_IMAGE_DIR / source
             if not source_path.exists():
                 raise FileNotFoundError(f"Seed image does not exist: {source_path}")
             product_image.external_url = ""

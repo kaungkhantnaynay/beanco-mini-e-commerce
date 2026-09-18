@@ -87,7 +87,9 @@ broken images while production continues to use object storage.
 Free Render preview services can now opt into the idempotent starter-catalog import at
 process startup, and server-rendered catalog reads tolerate the provider's cold-start
 delay. Regression coverage verifies that startup remains unchanged unless the explicit
-preview setting is enabled and that catalog requests use the extended timeout.
+preview setting is enabled and that catalog requests use the extended timeout. Seed
+images are bundled within the backend Docker build context so the import behaves the
+same locally and on Render.
 A repository-wide cleanup found no orphaned routes, components, backend modules, or
 dependencies. Unused theme declarations were removed without changing storefront
 behavior; intentionally separate product assets and historical implementation records
