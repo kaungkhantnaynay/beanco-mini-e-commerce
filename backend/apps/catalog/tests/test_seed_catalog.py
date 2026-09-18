@@ -18,6 +18,8 @@ def test_seed_catalog_imports_eight_products_without_duplication(
     assert Product.objects.count() == 8
     assert ProductVariant.objects.count() == 8
     assert ProductImage.objects.count() == 8
+    assert ProductImage.objects.exclude(image="").count() == 0
+    assert ProductImage.objects.filter(external_url__startswith="https://").count() == 8
     assert InventoryRecord.objects.count() == 8
     assert InventoryTransaction.objects.count() == 8
     assert Product.objects.get(slug="ethiopian-yirgacheffe").variants.get().price == 850

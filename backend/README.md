@@ -58,11 +58,11 @@ Endpoints:
 - `/admin/`
 
 `seed_catalog` idempotently imports the eight original products and their available
-images, variants, and initial inventory. The local seed images are bundled with the
-backend so the same import works inside its production Docker build context. In
-development, Django serves those managed files from `/media/`; production media is
-delivered by the configured object-storage backend. Local notifications use the
-configured console email backend. Production uses
+images, variants, and initial inventory. Starter catalog images use the public storefront
+assets, so the preview import does not depend on object-storage write access. Managed
+images added through Django still use `/media/` in development and the configured
+object-storage backend in production. Local notifications use the configured console
+email backend. Production uses
 Resend's SMTP interface and requires
 `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, and `STAFF_NOTIFICATION_EMAIL`.
 

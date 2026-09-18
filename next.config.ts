@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
       },
       {
+        protocol: "https",
+        hostname: "beanco-mini-e-commerce.vercel.app",
+        pathname: "/images/**",
+      },
+      {
         protocol: mediaBaseUrl.protocol.replace(":", "") as "http" | "https",
         hostname: mediaBaseUrl.hostname,
         port: mediaBaseUrl.port,

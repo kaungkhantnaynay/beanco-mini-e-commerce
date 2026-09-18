@@ -1,8 +1,6 @@
 from decimal import Decimal
-from pathlib import Path
 from typing import Any
 
-from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -36,7 +34,7 @@ PRODUCTS: tuple[dict[str, Any], ...] = (
         "slug": "sumatra-mandheling",
         "name": "Sumatra Mandheling",
         "price": "780.00",
-        "image": "sumatra-mandheling.png",
+        "image": "https://beanco-mini-e-commerce.vercel.app/images/sumatra-mandheling.png",
         "description": "Full-bodied and earthy with a rich, complex flavor profile.",
         "profile": "Earthy, spice, dark chocolate",
         "category": "coffee",
@@ -46,7 +44,7 @@ PRODUCTS: tuple[dict[str, Any], ...] = (
         "slug": "espresso-blend",
         "name": "Espresso Blend",
         "price": "700.00",
-        "image": "espresso-blend.png",
+        "image": "https://beanco-mini-e-commerce.vercel.app/images/espresso-blend.png",
         "description": "A bold and intense blend perfect for espresso shots and milk-based drinks.",
         "profile": "Molasses, toasted nut, crema",
         "category": "coffee",
@@ -56,7 +54,7 @@ PRODUCTS: tuple[dict[str, Any], ...] = (
         "slug": "ceramic-coffee-cup",
         "name": "Ceramic Coffee Cup",
         "price": "420.00",
-        "image": "ceramic-cup.png",
+        "image": "https://beanco-mini-e-commerce.vercel.app/images/ceramic-cup.png",
         "description": "Minimalist ceramic cup with a matte finish, perfect for your daily brew.",
         "profile": "Cafe-grade ceramic",
         "category": "drinkware",
@@ -66,7 +64,7 @@ PRODUCTS: tuple[dict[str, Any], ...] = (
         "slug": "pour-over-kit",
         "name": "Pour Over Kit",
         "price": "1550.00",
-        "image": "pour-over-kit.png",
+        "image": "https://beanco-mini-e-commerce.vercel.app/images/pour-over-kit.png",
         "description": "Complete pour over kit including a glass carafe, dripper, and kettle.",
         "profile": "Precision brewing kit",
         "category": "equipment",
@@ -76,7 +74,7 @@ PRODUCTS: tuple[dict[str, Any], ...] = (
         "slug": "coffee-grinder",
         "name": "Coffee Grinder",
         "price": "2990.00",
-        "image": "coffee-grinder.png",
+        "image": "https://beanco-mini-e-commerce.vercel.app/images/coffee-grinder.png",
         "description": "Premium electric grinder for consistent and precise coffee grounds.",
         "profile": "Consistent cafe grind",
         "category": "equipment",
@@ -86,7 +84,7 @@ PRODUCTS: tuple[dict[str, Any], ...] = (
         "slug": "travel-mug",
         "name": "Travel Mug",
         "price": "850.00",
-        "image": "travel-mug.png",
+        "image": "https://beanco-mini-e-commerce.vercel.app/images/travel-mug.png",
         "description": "Insulated stainless steel travel mug to keep your coffee hot on the go.",
         "profile": "Insulated stainless steel",
         "category": "drinkware",
@@ -99,9 +97,6 @@ CATEGORIES = {
     "equipment": ("Equipment", "Tools for consistent coffee brewing.", 1),
     "drinkware": ("Drinkware", "Cups and travel drinkware.", 2),
 }
-
-SEED_IMAGE_DIR = Path(__file__).resolve().parents[2] / "seed_images"
-
 
 class Command(BaseCommand):
     help = "Idempotently import the eight original storefront products."
@@ -163,23 +158,14 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Seeded {len(PRODUCTS)} BeanCo products."))
 
-    def _upsert_image(self, product: Product, source: str) -> None:
+    def _upsert_image(self, product: Product, source_url: str) -> None:
         product_image = ProductImage.objects.filter(product=product, display_order=0).first()
         if product_image is None:
             product_image = ProductImage(product=product, display_order=0, alt_text=product.name)
         product_image.alt_text = product.name
-        if source.startswith("https://"):
-            product_image.external_url = source
-            if product_image.image:
-                product_image.image.delete(save=False)
-            product_image.image = ""
-        else:
-            source_path = SEED_IMAGE_DIR / source
-            if not source_path.exists():
-                raise FileNotFoundError(f"Seed image does not exist: {source_path}")
-            product_image.external_url = ""
-            if not product_image.image or Path(product_image.image.name).name != source:
-                with source_path.open("rb") as image_file:
-                    product_image.image.save(source, File(image_file), save=False)
+        product_image.external_url = source_url
+        if product_image.image:
+            product_image.image.delete(save=False)
+        product_image.image = ""
         product_image.full_clean()
         product_image.save()
