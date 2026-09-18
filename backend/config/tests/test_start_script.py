@@ -30,6 +30,7 @@ def test_start_script_uses_runtime_port_with_local_default(
         environment.pop("PORT", None)
     else:
         environment["PORT"] = runtime_port
+    environment.pop("SEED_CATALOG_ON_START", None)
 
     subprocess.run(  # noqa: S603
         ["/bin/sh", "scripts/start.sh"],
@@ -49,3 +50,30 @@ def test_start_script_uses_runtime_port_with_local_default(
         "--error-logfile",
         "-",
     ]
+
+
+def test_start_script_seeds_catalog_when_enabled(tmp_path: Path) -> None:
+    backend_dir = Path(__file__).resolve().parents[2]
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    captured_seed_arguments = tmp_path / "seed-arguments"
+    fake_python = fake_bin / "python"
+    fake_python.write_text('#!/bin/sh\nprintf \'%s\\n\' "$@" > "$SEED_CAPTURE_PATH"\n')
+    fake_python.chmod(0o755)
+    fake_gunicorn = fake_bin / "gunicorn"
+    fake_gunicorn.write_text("#!/bin/sh\nexit 0\n")
+    fake_gunicorn.chmod(0o755)
+
+    subprocess.run(  # noqa: S603
+        ["/bin/sh", "scripts/start.sh"],
+        cwd=backend_dir,
+        env={
+            **os.environ,
+            "PATH": f"{fake_bin}:{os.environ['PATH']}",
+            "SEED_CATALOG_ON_START": "true",
+            "SEED_CAPTURE_PATH": str(captured_seed_arguments),
+        },
+        check=True,
+    )
+
+    assert captured_seed_arguments.read_text().splitlines() == ["manage.py", "seed_catalog"]

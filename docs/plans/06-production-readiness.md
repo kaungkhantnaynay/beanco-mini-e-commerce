@@ -84,6 +84,10 @@ configurable through `BEANCO_DEV_ALLOWED_ORIGINS`.
 Development media URLs now serve the catalog's managed product images directly from
 `MEDIA_ROOT`, with regression coverage, so local storefront testing no longer shows
 broken images while production continues to use object storage.
+Free Render preview services can now opt into the idempotent starter-catalog import at
+process startup, and server-rendered catalog reads tolerate the provider's cold-start
+delay. Regression coverage verifies that startup remains unchanged unless the explicit
+preview setting is enabled and that catalog requests use the extended timeout.
 A repository-wide cleanup found no orphaned routes, components, backend modules, or
 dependencies. Unused theme declarations were removed without changing storefront
 behavior; intentionally separate product assets and historical implementation records

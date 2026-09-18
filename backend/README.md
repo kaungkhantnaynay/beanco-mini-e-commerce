@@ -64,6 +64,11 @@ backend. Local notifications use the configured console email backend. Productio
 Resend's SMTP interface and requires
 `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, and `STAFF_NOTIFICATION_EMAIL`.
 
+Free preview services that cannot run a separate release job may set
+`SEED_CATALOG_ON_START=true`. The startup script then runs the idempotent catalog import
+before Gunicorn. Keep this disabled for established production catalogs, where operators
+should run `seed_catalog` explicitly as a controlled release action.
+
 Every response includes a UUID `X-Request-ID`; a valid incoming value is preserved so
 requests can be traced across the storefront and API. JSON access logs contain only the
 request ID, method, path without its query string, status, duration, and exception type.

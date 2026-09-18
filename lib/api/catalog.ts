@@ -8,6 +8,7 @@ import type {
 } from "@/lib/types/api";
 
 export const CATALOG_REVALIDATE_SECONDS = 300;
+export const CATALOG_TIMEOUT_MS = 60_000;
 
 export function buildCatalogQuery(filters: ProductFilters = {}): string {
   const query = new URLSearchParams();
@@ -25,17 +26,20 @@ export async function getProducts(
   const query = buildCatalogQuery(filters);
   return apiRequest<PaginatedResponse<ProductSummary>>(`products/${query ? `?${query}` : ""}`, {
     next: { revalidate: CATALOG_REVALIDATE_SECONDS, tags: ["catalog-products"] },
+    timeoutMs: CATALOG_TIMEOUT_MS,
   });
 }
 
 export async function getProduct(slug: string): Promise<ProductDetail> {
   return apiRequest<ProductDetail>(`products/${encodeURIComponent(slug)}/`, {
     next: { revalidate: CATALOG_REVALIDATE_SECONDS, tags: ["catalog-products", `product-${slug}`] },
+    timeoutMs: CATALOG_TIMEOUT_MS,
   });
 }
 
 export async function getCategories(): Promise<PaginatedResponse<Category>> {
   return apiRequest<PaginatedResponse<Category>>("categories/?page_size=48", {
     next: { revalidate: CATALOG_REVALIDATE_SECONDS, tags: ["catalog-categories"] },
+    timeoutMs: CATALOG_TIMEOUT_MS,
   });
 }
