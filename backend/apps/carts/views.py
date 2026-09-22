@@ -43,7 +43,7 @@ class CartAPIView(APIView):
                 max_age=settings.CART_COOKIE_MAX_AGE,
                 httponly=True,
                 secure=settings.CART_COOKIE_SECURE,
-                samesite="Lax",
+                samesite=settings.CART_COOKIE_SAMESITE,
                 path="/api/v1/",
             )
         return response

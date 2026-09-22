@@ -9,9 +9,12 @@ import type {
   PaymentCheckoutSession,
 } from "@/lib/types/api";
 
+export const COMMERCE_TIMEOUT_MS = 60_000;
+
 const browserMutationOptions = {
   cache: "no-store" as const,
   credentials: "include" as const,
+  timeoutMs: COMMERCE_TIMEOUT_MS,
 };
 
 export function getCart(): Promise<Cart> {
@@ -61,6 +64,7 @@ export function createOrder(input: OrderCreateInput, idempotencyKey: string): Pr
 export function getOrderStatus(publicId: string): Promise<OrderStatusResponse> {
   return apiRequest<OrderStatusResponse>(`orders/${publicId}/status/`, {
     cache: "no-store",
+    timeoutMs: COMMERCE_TIMEOUT_MS,
   });
 }
 

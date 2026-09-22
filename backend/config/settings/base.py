@@ -149,6 +149,7 @@ CSRF_COOKIE_SAMESITE = "Lax"
 CART_COOKIE_NAME = env("CART_COOKIE_NAME", default="beanco_cart")
 CART_COOKIE_MAX_AGE = 30 * 24 * 60 * 60
 CART_COOKIE_SECURE = env.bool("CART_COOKIE_SECURE", default=not DEBUG)
+CART_COOKIE_SAMESITE = env("CART_COOKIE_SAMESITE", default="Lax")
 
 EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
 ACCOUNT_EMAIL_BACKEND = env(

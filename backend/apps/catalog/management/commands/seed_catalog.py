@@ -98,6 +98,7 @@ CATEGORIES = {
     "drinkware": ("Drinkware", "Cups and travel drinkware.", 2),
 }
 
+
 class Command(BaseCommand):
     help = "Idempotently import the eight original storefront products."
 

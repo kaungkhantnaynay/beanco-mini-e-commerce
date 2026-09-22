@@ -74,6 +74,17 @@ def test_get_cart_sets_secret_http_only_cookie_and_returns_public_uuid(client: C
 
 
 @pytest.mark.django_db
+def test_cart_cookie_uses_configured_cross_site_policy(client: Client, settings: object) -> None:
+    settings.CART_COOKIE_SAMESITE = "None"  # type: ignore[attr-defined]
+
+    response = client.get(reverse("cart-detail"))
+
+    cookie = response.cookies["beanco_cart"]
+    assert cookie["secure"] is True
+    assert cookie["samesite"] == "None"
+
+
+@pytest.mark.django_db
 def test_cookie_retrieves_only_its_cart_and_unknown_token_creates_another(client: Client) -> None:
     first_response = client.get(reverse("cart-detail"))
     first = first_response.json()["public_id"]

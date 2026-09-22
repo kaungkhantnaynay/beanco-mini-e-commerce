@@ -90,6 +90,10 @@ delay. Regression coverage verifies that startup remains unchanged unless the ex
 preview setting is enabled and that catalog requests use the extended timeout. Seed
 images reference the already-deployed public storefront assets, keeping the free preview
 bootstrap independent of object-storage write availability.
+Anonymous commerce requests now use the same cold-start-tolerant timeout, and the guest
+cart cookie's SameSite policy is environment-driven. Production defaults to the secure
+cross-site policy required while the storefront and API remain on separate Vercel and
+Render domains; local development keeps the stricter Lax policy.
 A repository-wide cleanup found no orphaned routes, components, backend modules, or
 dependencies. Unused theme declarations were removed without changing storefront
 behavior; intentionally separate product assets and historical implementation records

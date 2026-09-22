@@ -1,5 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { addCartItem, createOrder, createPaymentSession, getCart, removeCartItem, updateCartItem } from "@/lib/api/commerce";
+import {
+  COMMERCE_TIMEOUT_MS,
+  addCartItem,
+  createOrder,
+  createPaymentSession,
+  getCart,
+  removeCartItem,
+  updateCartItem,
+} from "@/lib/api/commerce";
 
 describe("commerce API", () => {
   afterEach(() => {
@@ -22,11 +30,39 @@ describe("commerce API", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(4);
     for (const call of fetchMock.mock.calls) {
-      expect(call[1]).toEqual(expect.objectContaining({ credentials: "include", cache: "no-store" }));
+      expect(call[1]).toEqual(
+        expect.objectContaining({
+          credentials: "include",
+          cache: "no-store",
+          signal: expect.any(AbortSignal),
+        }),
+      );
     }
     expect(fetchMock.mock.calls[1][1]).toEqual(expect.objectContaining({ method: "POST" }));
     expect(fetchMock.mock.calls[2][1]).toEqual(expect.objectContaining({ method: "PATCH" }));
     expect(fetchMock.mock.calls[3][1]).toEqual(expect.objectContaining({ method: "DELETE" }));
+  });
+
+  it("allows free-tier commerce requests enough time to survive a cold start", async () => {
+    vi.useFakeTimers();
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "http://localhost:8000/api/v1");
+    const fetchMock = vi.fn().mockImplementation(
+      (_url: string, options: RequestInit) =>
+        new Promise((_resolve, reject) => {
+          options.signal?.addEventListener("abort", () =>
+            reject(new DOMException("The operation was aborted.", "AbortError")),
+          );
+        }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const request = getCart();
+    const timeoutExpectation = expect(request).rejects.toMatchObject({ code: "timeout" });
+    await vi.advanceTimersByTimeAsync(COMMERCE_TIMEOUT_MS - 1);
+    expect(fetchMock.mock.calls[0][1].signal.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await timeoutExpectation;
+    vi.useRealTimers();
   });
 
   it("sends the idempotency key when creating an order", async () => {

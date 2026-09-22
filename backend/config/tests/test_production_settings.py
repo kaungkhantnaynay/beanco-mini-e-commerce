@@ -43,6 +43,9 @@ assert settings.AWS_QUERYSTRING_AUTH is True
 assert settings.AWS_QUERYSTRING_EXPIRE == 900
 assert settings.AWS_DEFAULT_ACL is None
 assert settings.AWS_S3_FILE_OVERWRITE is False
+assert settings.CORS_ALLOWED_ORIGINS == ["https://shop.example.test"]
+assert settings.CART_COOKIE_SECURE is True
+assert settings.CART_COOKIE_SAMESITE == "None"
 """
 
     subprocess.run(  # noqa: S603
