@@ -1,0 +1,2 @@
+export const SUPPORT_PROXY_TIMEOUT_MS = 90_000;
+export const SUPPORT_CLIENT_TIMEOUT_MS = 95_000;

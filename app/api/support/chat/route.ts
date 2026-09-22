@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const SUPPORT_TIMEOUT_MS = 30_000;
+import { SUPPORT_PROXY_TIMEOUT_MS } from "@/lib/config/support-timeouts";
 
 type SupportProxyRequest = {
   message?: unknown;
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), SUPPORT_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), SUPPORT_PROXY_TIMEOUT_MS);
   try {
     const response = await fetch(config.url, {
       method: "POST",

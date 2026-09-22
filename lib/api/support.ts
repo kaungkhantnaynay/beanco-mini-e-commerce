@@ -1,6 +1,5 @@
 import type { SupportChatRequest, SupportChatResponse } from "@/lib/types/support";
-
-const SUPPORT_TIMEOUT_MS = 15_000;
+import { SUPPORT_CLIENT_TIMEOUT_MS } from "@/lib/config/support-timeouts";
 
 export class SupportRequestError extends Error {
   constructor(message: string) {
@@ -13,7 +12,7 @@ export async function sendSupportMessage(
   input: SupportChatRequest,
 ): Promise<SupportChatResponse> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), SUPPORT_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), SUPPORT_CLIENT_TIMEOUT_MS);
 
   try {
     const response = await fetch("/api/support/chat", {

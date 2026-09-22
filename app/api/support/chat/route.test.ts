@@ -1,10 +1,15 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/support/chat/route";
+import { SUPPORT_PROXY_TIMEOUT_MS } from "@/lib/config/support-timeouts";
 
 describe("support chat proxy", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
+  });
+
+  it("allows the free support service enough time to wake", () => {
+    expect(SUPPORT_PROXY_TIMEOUT_MS).toBe(90_000);
   });
 
   it("keeps the support service URL on the server and forwards conversation credentials", async () => {

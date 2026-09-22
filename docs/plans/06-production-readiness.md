@@ -74,8 +74,8 @@ verification remain open.
 ADR 0008 connects the separate Customer Support AI service through a same-origin
 Next.js route. The storefront widget, in-memory conversation credentials, BeanCO
 knowledge pack, and offline evaluation are implemented. Production support-service
-deployment and environment configuration remain open. Deployment preparation now adds
-a server-only shared token, a bounded 30-second proxy timeout, regression tests, and a
+deployment and environment configuration are complete. Deployment hardening includes
+a server-only shared token, a bounded 90-second proxy timeout, regression tests, and a
 Render Blueprint/runbook in the Customer Support repository.
 Local-device acceptance testing now auto-allows the development workstation's active
 LAN IPv4 addresses, preventing Next.js from blocking its client runtime when the
