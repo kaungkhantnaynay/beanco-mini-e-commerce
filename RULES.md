@@ -1,7 +1,7 @@
-# BeanCo Engineering Rules
+# BeanCo Engineering Standards
 
-This document is the shared implementation contract for the BeanCo storefront and
-Django backend. It must be read before any feature implementation.
+This document records the shared engineering standards for the BeanCo storefront and
+Django backend.
 
 ## 1. Product and scope
 
@@ -143,4 +143,3 @@ A feature is complete only when:
 - No secret, debug-only setting, unresolved merge marker, or unexplained warning is
   introduced.
 - The active phase plan is updated with completed work and remaining follow-ups.
-

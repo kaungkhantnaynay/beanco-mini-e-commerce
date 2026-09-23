@@ -1,8 +1,8 @@
 # BeanCo Mini E-Commerce
 
-BeanCo is a Next.js coffee catalog and partnership storefront. A Django REST
-Framework backend will provide catalog management, lead capture, inventory, carts,
-orders, customer accounts, and payments through phased implementation.
+BeanCo is a production-oriented coffee storefront built with Next.js and Django REST
+Framework. It combines a public catalog and partnership journey with transactional
+inventory, carts, orders, customer accounts, payments, and grounded customer support.
 
 ## Current state
 
@@ -13,14 +13,17 @@ orders, customer accounts, and payments through phased implementation.
 - Phases 0–4 complete; Phase 5 implementation complete with its Stripe acceptance
   matrix deferred; Phase 6 production readiness in progress
 
-## Required reading before implementation
+## Engineering approach
 
-All contributors and implementation agents must read:
+The repository favors explicit service boundaries, backend-owned business rules,
+transactional inventory updates, stable API contracts, and automated release gates.
+Important decisions and operating procedures are kept with the code:
 
-1. [`AGENTS.md`](AGENTS.md)
-2. [`RULES.md`](RULES.md)
-3. [`docs/plans/README.md`](docs/plans/README.md)
-4. The plan document for the phase being implemented
+- [Engineering standards](RULES.md)
+- [Contribution guide](CONTRIBUTING.md)
+- [Architecture decisions](docs/decisions/README.md)
+- [Operational runbooks](docs/operations/README.md)
+- [Delivery roadmap](docs/plans/README.md)
 
 ## Frontend setup
 

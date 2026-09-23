@@ -100,3 +100,6 @@ behavior; intentionally separate product assets and historical implementation re
 were retained. Ineffective local settings-module and debug entries were also removed
 from the backend environment template because the runtime entry points select those
 settings explicitly.
+The secret-scanning workflow now authenticates GitHub API requests and pins the
+Gitleaks action to a reviewed revision, preventing personal-account scans from being
+misclassified as unlicensed organization scans.

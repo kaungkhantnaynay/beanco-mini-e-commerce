@@ -1,8 +1,9 @@
 # BeanCo Implementation Plans
 
 These documents define the approved implementation sequence for the Django-backed
-BeanCo storefront. Read [`AGENTS.md`](../../AGENTS.md) and [`RULES.md`](../../RULES.md)
-before using any plan.
+BeanCo storefront. Contributors should follow the repository
+[contribution guide](../../CONTRIBUTING.md) and
+[engineering standards](../../RULES.md) when delivering a plan item.
 
 ## Product direction
 
