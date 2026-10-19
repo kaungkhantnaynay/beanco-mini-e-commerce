@@ -67,9 +67,10 @@ Resend's SMTP interface and requires
 `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`, and `STAFF_NOTIFICATION_EMAIL`.
 
 Free preview services that cannot run a separate release job may set
-`SEED_CATALOG_ON_START=true`. The startup script then runs the idempotent catalog import
-before Gunicorn. Keep this disabled for established production catalogs, where operators
-should run `seed_catalog` explicitly as a controlled release action.
+`SEED_CATALOG_ON_START=true`. The startup script then applies pending migrations before
+running the idempotent catalog import and starting Gunicorn. Keep this disabled for
+established production catalogs, where operators should run migrations and `seed_catalog`
+explicitly as controlled release actions.
 
 Every response includes a UUID `X-Request-ID`; a valid incoming value is preserved so
 requests can be traced across the storefront and API. JSON access logs contain only the
@@ -154,9 +155,10 @@ From the repository root, build the API image with:
 docker build --tag beanco-backend backend
 ```
 
-The image starts Gunicorn as a non-root user and does not run migrations automatically.
-Gunicorn binds to the runtime `PORT` supplied by the deployment platform and defaults
-to port `8000` when the variable is absent.
+The image starts Gunicorn as a non-root user and does not run migrations automatically
+unless the free-preview bootstrap described above is explicitly enabled. Gunicorn binds
+to the runtime `PORT` supplied by the deployment platform and defaults to port `8000`
+when the variable is absent.
 Configure the deployment platform to run this command once before new application
 replicas start:
 

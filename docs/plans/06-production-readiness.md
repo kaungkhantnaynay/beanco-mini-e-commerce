@@ -85,11 +85,13 @@ Development media URLs now serve the catalog's managed product images directly f
 `MEDIA_ROOT`, with regression coverage, so local storefront testing no longer shows
 broken images while production continues to use object storage.
 Free Render preview services can now opt into the idempotent starter-catalog import at
-process startup, and server-rendered catalog reads tolerate the provider's cold-start
-delay. Regression coverage verifies that startup remains unchanged unless the explicit
-preview setting is enabled and that catalog requests use the extended timeout. Seed
-images reference the already-deployed public storefront assets, keeping the free preview
-bootstrap independent of object-storage write availability.
+process startup. That preview-only bootstrap applies pending migrations before importing
+the catalog so a newly provisioned database can start successfully. Server-rendered
+catalog reads tolerate the provider's cold-start delay. Regression coverage verifies
+that startup remains unchanged unless the explicit preview setting is enabled, enforces
+the migration-before-seed ordering, and verifies that catalog requests use the extended
+timeout. Seed images reference the already-deployed public storefront assets, keeping
+the free preview bootstrap independent of object-storage write availability.
 Anonymous commerce requests now use the same cold-start-tolerant timeout, and the guest
 cart cookie's SameSite policy is environment-driven. Production defaults to the secure
 cross-site policy required while the storefront and API remain on separate Vercel and

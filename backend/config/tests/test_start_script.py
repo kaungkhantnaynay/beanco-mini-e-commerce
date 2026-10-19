@@ -56,9 +56,9 @@ def test_start_script_seeds_catalog_when_enabled(tmp_path: Path) -> None:
     backend_dir = Path(__file__).resolve().parents[2]
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
-    captured_seed_arguments = tmp_path / "seed-arguments"
+    captured_startup_commands = tmp_path / "startup-commands"
     fake_python = fake_bin / "python"
-    fake_python.write_text('#!/bin/sh\nprintf \'%s\\n\' "$@" > "$SEED_CAPTURE_PATH"\n')
+    fake_python.write_text('#!/bin/sh\nprintf \'%s\\n\' "$*" >> "$STARTUP_CAPTURE_PATH"\n')
     fake_python.chmod(0o755)
     fake_gunicorn = fake_bin / "gunicorn"
     fake_gunicorn.write_text("#!/bin/sh\nexit 0\n")
@@ -71,9 +71,12 @@ def test_start_script_seeds_catalog_when_enabled(tmp_path: Path) -> None:
             **os.environ,
             "PATH": f"{fake_bin}:{os.environ['PATH']}",
             "SEED_CATALOG_ON_START": "true",
-            "SEED_CAPTURE_PATH": str(captured_seed_arguments),
+            "STARTUP_CAPTURE_PATH": str(captured_startup_commands),
         },
         check=True,
     )
 
-    assert captured_seed_arguments.read_text().splitlines() == ["manage.py", "seed_catalog"]
+    assert captured_startup_commands.read_text().splitlines() == [
+        "manage.py migrate --noinput",
+        "manage.py seed_catalog",
+    ]
